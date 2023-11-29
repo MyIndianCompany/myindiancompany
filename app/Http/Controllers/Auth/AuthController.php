@@ -9,7 +9,10 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -23,11 +26,40 @@ class AuthController extends Controller
     /**
      * Registration
      */
-    public function register(RegisterRequest $request)
+    public function register(Request $request)
     {
-        $user = $this->createUser($request->validated());
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:users',
+            'phone' => ['numeric', 'regex:/^[0-9]{10}$/'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
 
-        return $this->respondWithToken($user);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'phone' => $request->input('phone'),
+                'password' => Hash::make($request->input('password')),
+            ]);
+            $token = $this->generateAccessToken($user);
+            DB::commit();
+            return $this->respondWithToken($user, $token, 'User registered successfully');
+        } catch (\Exception $err) {
+            DB::rollBack();
+            report($err);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to register user',
+            ], 500);
+        }
     }
 
     /**
@@ -58,35 +90,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Attempt Login
-     */
-    protected function attemptLogin(array $credentials): bool
-    {
-        return $this->auth::attempt($credentials);
-    }
-
-    /**
-     * Generate Access Token
-     */
-    protected function generateAccessToken($user): string
-    {
-        return $user->createToken('token')->accessToken;
-    }
-
-    /**
-     * Create User
-     */
-    protected function createUser(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'password' => Hash::make($data['password']),
-        ]);
-    }
-
-    /**
      * Respond With Token
      */
     protected function respondWithToken($user, $token = null, $message = 'Success')
@@ -96,6 +99,21 @@ class AuthController extends Controller
             'access_token' => $token ?: $this->generateAccessToken($user),
             'token_type' => 'bearer'
         ], 200);
+    }
+    /**
+     * Generate Access Token
+     */
+    protected function generateAccessToken($user): string
+    {
+        return $user->createToken('token')->accessToken;
+    }
+
+    /**
+     * Attempt Login
+     */
+    protected function attemptLogin(array $credentials): bool
+    {
+        return $this->auth::attempt($credentials);
     }
 
     /**
