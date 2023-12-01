@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('password');
 
+            $table->enum('role', ['agent', 'customer', 'admin']);
+
             $table->timestamp('password_changed_at')->useCurrent();
             $table->timestamp('email_verified_at')->nullable();
 

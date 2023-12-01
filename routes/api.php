@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Agent\Auth\AuthController;
+use App\Http\Controllers\Agent\AgentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,15 +16,12 @@ use App\Http\Controllers\Auth\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/greeting', function () {
-    return 'Hello';
-});
-
-Route::prefix('user')->group(function () {
+// Agent
+Route::prefix('agent')->group(function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('register', 'register');
         Route::post('login', 'login');
@@ -32,5 +30,9 @@ Route::prefix('user')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('logout', 'logout');
         });
+    });
+
+    Route::controller(AgentController::class)->group(function () {
+        Route::patch('{agent}', 'update');
     });
 });
