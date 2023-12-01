@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Agent\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Requests\Agent\LoginRequest;
+use App\Models\Agent\Agent;
+use App\Models\Agent\ContactAgent;
+use App\Models\Contact;
 use App\Models\User;
+use App\Services\Agent\Auth\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
+use App\Common\Constants\Constants;
 
 class AuthController extends Controller
 {
@@ -26,7 +27,7 @@ class AuthController extends Controller
     /**
      * Registration
      */
-    public function register(Request $request)
+    public function register(Request $request, AuthService $authService)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|unique:users',
@@ -47,11 +48,21 @@ class AuthController extends Controller
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'phone' => $request->input('phone'),
-                'password' => Hash::make($request->input('password')),
+                'password' => bcrypt($request->input('password')),
+                'role' => Constants::USER_AGENT
             ]);
-            $token = $this->generateAccessToken($user);
+            $token = $authService->generateAccessToken($user);
+            $agent = Agent::create([
+                'user_id' => $user->id,
+                'name' => $request->input('name'),
+            ]);
+            $contact = Contact::create([
+                'phone' => $request->input('phone'),
+                'email' => $request->input('email')
+            ]);
+            $agent->contacts()->attach($contact->id);
             DB::commit();
-            return $this->respondWithToken($user, $token, 'User registered successfully');
+            return $authService->respondWithToken($user, $token, 'User registered successfully');
         } catch (\Exception $err) {
             DB::rollBack();
             report($err);
@@ -65,18 +76,18 @@ class AuthController extends Controller
     /**
      * Login
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, AuthService $authService)
     {
         $credentials = $request->only(['email', 'password']);
 
-        if ($this->attemptLogin($credentials)) {
+        if ($authService->attemptLogin($credentials)) {
             $user = $this->auth::user();
-            $token = $this->generateAccessToken($user);
+            $token = $authService->generateAccessToken($user);
 
-            return $this->respondWithToken($user, $token, 'Successfully Login!');
+            return $authService->respondWithToken($user, $token, 'Successfully Login!');
         }
 
-        return $this->unauthorizedResponse();
+        return $authService->unauthorizedResponse();
     }
 
     /**
@@ -87,40 +98,5 @@ class AuthController extends Controller
         $this->auth::user()->token()->revoke();
 
         return response()->json(['message' => 'Successfully logged out'], 200);
-    }
-
-    /**
-     * Respond With Token
-     */
-    protected function respondWithToken($user, $token = null, $message = 'Success')
-    {
-        return response()->json([
-            'message' => $message,
-            'access_token' => $token ?: $this->generateAccessToken($user),
-            'token_type' => 'bearer'
-        ], 200);
-    }
-    /**
-     * Generate Access Token
-     */
-    protected function generateAccessToken($user): string
-    {
-        return $user->createToken('token')->accessToken;
-    }
-
-    /**
-     * Attempt Login
-     */
-    protected function attemptLogin(array $credentials): bool
-    {
-        return $this->auth::attempt($credentials);
-    }
-
-    /**
-     * Unauthorized Response
-     */
-    protected function unauthorizedResponse()
-    {
-        return response()->json(['error' => 'Unauthorized'], 401);
     }
 }
