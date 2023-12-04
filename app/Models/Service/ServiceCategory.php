@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models\Agent;
+namespace App\Models\Service;
 
+use App\Models\Agent\Agent;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class AgentBankAccount extends Model
+class ServiceCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -41,14 +42,12 @@ class AgentBankAccount extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'agent_id',
-        'account_holder_name',
-        'bank_name',
-        'account_number',
-        'type',
-        'ifsc',
-        'pan_number',
-        'aadhaar_number'
+        'service_category_id',
+        'name',
+        'description',
+        'slug',
+        'remark',
+        'status'
     ];
 
     /**
@@ -57,6 +56,7 @@ class AgentBankAccount extends Model
      * @var array<int, string>
      */
     protected $hidden = [
+        'status',
         'deleted_by',
         'created_by',
         'updated_by',
@@ -64,4 +64,13 @@ class AgentBankAccount extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class);
+    }
+    public function agents()
+    {
+        return $this->hasMany(Agent::class);
+    }
 }

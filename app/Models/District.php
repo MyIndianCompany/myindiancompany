@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Models\Agent;
+namespace App\Models;
 
-use App\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AgentContact extends Model
+class District extends Model
 {
     use HasFactory;
 
@@ -16,8 +15,9 @@ class AgentContact extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'contact_id',
-        'agent_id'
+        'state_id',
+        'name',
+        'description'
     ];
 
     /**
@@ -31,14 +31,13 @@ class AgentContact extends Model
         'updated_at'
     ];
 
-
-    public  function agents()
+    public function state()
     {
-        return $this->hasMany(Agent::class);
+        return $this->belongsTo(State::class);
     }
 
-    public function contacts()
+    public function cities()
     {
-        return $this->hasMany(Contact::class);
+        return $this->hasMany(City::class);
     }
 }

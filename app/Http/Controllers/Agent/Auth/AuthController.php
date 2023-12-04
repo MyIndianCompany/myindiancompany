@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Agent\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\LoginRequest;
 use App\Models\Agent\Agent;
-use App\Models\Agent\ContactAgent;
 use App\Models\Contact;
 use App\Models\User;
 use App\Services\Agent\Auth\AuthService;

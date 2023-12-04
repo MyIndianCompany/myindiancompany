@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Agent;
+namespace App\Models\Service;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class AgentBankAccount extends Model
+class ServiceVariant extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -41,14 +41,14 @@ class AgentBankAccount extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'agent_id',
-        'account_holder_name',
-        'bank_name',
-        'account_number',
-        'type',
-        'ifsc',
-        'pan_number',
-        'aadhaar_number'
+        'service_id',
+        'name',
+        'variant_value',
+        'description',
+        'price',
+        'slug',
+        'remark',
+        'status'
     ];
 
     /**
@@ -57,6 +57,7 @@ class AgentBankAccount extends Model
      * @var array<int, string>
      */
     protected $hidden = [
+        'status',
         'deleted_by',
         'created_by',
         'updated_by',
@@ -64,4 +65,9 @@ class AgentBankAccount extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function service()
+    {
+        return $this->belongsTo(ServiceVariant::class);
+    }
 }

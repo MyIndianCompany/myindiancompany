@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agent_documents', function (Blueprint $table) {
+        Schema::create('agent_contact', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('agent_id')->nullable();
-            $table->unsignedBigInteger('bank_account_id')->nullable();
-            $table->string('file');
-            $table->string('mime_type');
-
+            $table->unsignedBigInteger('contact_id');
+            $table->unsignedBigInteger('agent_id');
             $table->timestamps();
-            $table->softDeletes();
-
+            $table->foreign('contact_id')->references('id')->on('contacts');
             $table->foreign('agent_id')->references('id')->on('agents');
-            $table->foreign('bank_account_id')->references('id')->on('agent_bank_accounts');
         });
     }
 
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agent_documents');
+        Schema::dropIfExists('agent_contact');
     }
 };

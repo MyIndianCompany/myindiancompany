@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Contact extends Model
+class State extends Model
 {
     use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -16,27 +15,15 @@ class Contact extends Model
      */
     protected $fillable = [
         'country_id',
-        'state_id',
-        'district_id',
-        'city_id',
-        'address',
-        'landmark',
-        'zip_code',
-        'phone',
-        'alt_phone',
-        'email',
-        'is_primary'
+        'name',
+        'description'
     ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
     protected $hidden = [
-        'deleted_by',
-        'created_by',
-        'updated_by',
         'deleted_at',
         'created_at',
         'updated_at'
@@ -47,18 +34,8 @@ class Contact extends Model
         return $this->belongsTo(Country::class);
     }
 
-    public function state()
+    public function districts()
     {
-        return $this->belongsTo(State::class);
-    }
-
-    public function district()
-    {
-        return $this->belongsTo(District::class);
-    }
-
-    public function city()
-    {
-        return $this->belongsTo(City::class);
+        return $this->hasMany(District::class);
     }
 }
