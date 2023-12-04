@@ -19,12 +19,20 @@ return new class extends Migration
             $table->string('account_number');
             $table->string('type')->nullable();
             $table->string('ifsc');
-            $table->string('swift_code')->nullable();
+            $table->string('pan_number')->nullable();
+            $table->string('aadhaar_number')->nullable();
+
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('agent_id')->references('id')->on('users');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users');
+            $table->foreign('deleted_by')->references('id')->on('users');
         });
     }
 

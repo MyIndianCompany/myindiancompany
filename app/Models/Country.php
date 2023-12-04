@@ -1,29 +1,22 @@
 <?php
 
-namespace App\Models\Agent;
+namespace App\Models;
 
-use App\Models\Contact;
-use App\Models\Service\ServiceCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Agent extends Model
+class Country extends Model
 {
     use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
         'name',
-        'service_category_id',
-        'gender',
-        'aadhaar_number',
-        'pan_number',
-        'pan_number'
+        'country_code',
+        'description'
     ];
 
     /**
@@ -37,13 +30,8 @@ class Agent extends Model
         'updated_at'
     ];
 
-    public function contacts()
+    public function states()
     {
-        return $this->belongsToMany(Contact::class);
-    }
-
-    public function serviceCategory()
-    {
-        return $this->belongsTo(ServiceCategory::class);
+        return $this->hasMany(State::class);
     }
 }

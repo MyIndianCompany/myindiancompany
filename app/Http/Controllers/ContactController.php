@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Agent;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Agent\StoreAgentDocumentRequest;
-use App\Http\Requests\Agent\UpdateAgentDocumentRequest;
-use App\Models\Agent\AgentDocument;
+use App\Models\Contact;
+use Illuminate\Http\Request;
 
-class AgentDocumentController extends Controller
+class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,7 +26,7 @@ class AgentDocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAgentDocumentRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -36,7 +34,7 @@ class AgentDocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AgentDocument $agentDocument)
+    public function show(Contact $contact)
     {
         //
     }
@@ -44,7 +42,7 @@ class AgentDocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AgentDocument $agentDocument)
+    public function edit(Contact $contact)
     {
         //
     }
@@ -52,7 +50,7 @@ class AgentDocumentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAgentDocumentRequest $request, AgentDocument $agentDocument)
+    public function update(Request $request, Contact $contact)
     {
         //
     }
@@ -60,7 +58,7 @@ class AgentDocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AgentDocument $agentDocument)
+    public function destroy(Contact $contact)
     {
         //
     }

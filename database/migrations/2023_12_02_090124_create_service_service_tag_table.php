@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agent_contact', function (Blueprint $table) {
+        Schema::create('service_service_tag', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('contact_id')->unsigned();
-            $table->bigInteger('agent_id')->unsigned();
-
+            $table->unsignedBigInteger('service_id');
+            $table->unsignedBigInteger('service_tag_id');
             $table->timestamps();
-            $table->softDeletes();
-
-            $table->foreign('contact_id')->references('id')->on('contacts');
-            $table->foreign('agent_id')->references('id')->on('agents');
+            $table->foreign('service_id')->references('id')->on('services');
+            $table->foreign('service_tag_id')->references('id')->on('service_tags');
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('agent_contact');
+        Schema::dropIfExists('service_service_tag');
     }
 };

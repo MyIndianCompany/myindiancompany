@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name', 255)->nullable();
-            $table->string('job_title', 225)->nullable();
-            $table->enum('gender', ['M', 'F', 'O'])->default('O');
+            $table->unsignedBigInteger('service_category_id')->nullable()->comment('Job Title');
+            $table->enum('gender', ['M', 'F', 'O'])->nullable();
             $table->string('aadhaar_number', 225)->nullable();
             $table->string('pan_number', 225)->nullable();
             $table->string('photo', 255)->nullable();
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('service_category_id')->references('id')->on('service_categories');
         });
     }
 
