@@ -15,7 +15,7 @@ class CountryController extends Controller
     public function index()
     {
         $limit = request()->limit ?: 50;
-        $query = Country::query();
+        $query = Country::query()->orderBy('name');
         $paginate = $query->paginate($limit);
         return CountryResource::collection($paginate);
     }

@@ -15,7 +15,13 @@ class CityController extends Controller
     public function index()
     {
         $limit = request()->limit ?: 50;
-        $query = City::query()->with('district.state.country');
+        $query = City::query()->with('district.state.country')
+            ->when(request()->has('search'), function ($query) {
+                $searchTerm = request()->input('search');
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            })
+            ->orderBy('name');
+
         $paginate = $query->paginate($limit);
         return CityResource::collection($paginate);
     }

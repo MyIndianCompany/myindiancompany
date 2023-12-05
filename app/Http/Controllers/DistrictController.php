@@ -15,7 +15,7 @@ class DistrictController extends Controller
     public function index()
     {
         $limit = request()->limit ?: 50;
-        $query = District::query();
+        $query = District::query()->orderBy('name');
         $paginate = $query->paginate($limit);
         return DistrictResource::collection($paginate);
     }
