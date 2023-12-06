@@ -61,6 +61,7 @@ class AgentController extends Controller
             $city = City::with('district.state.country')->find($cityId);
             DB::beginTransaction();
             $agent->update([
+                'name' => $request->input('name'),
                 'service_category_id' => $request->input('service_category_id')
             ]);
 
