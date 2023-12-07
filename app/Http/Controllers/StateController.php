@@ -14,10 +14,10 @@ class StateController extends Controller
      */
     public function index()
     {
-        $limit = request()->limit ?: 50;
-        $query = State::query()->orderBy('name');
-        $paginate = $query->paginate($limit);
-        return StateResource::collection($paginate);
+        $query = State::query()
+            ->orderBy('name')
+            ->get();
+        return StateResource::collection($query);
     }
 
     /**

@@ -15,10 +15,10 @@ class ServiceVariantController extends Controller
      */
     public function index()
     {
-        $limit = request()->limit ?: 50;
-        $query = ServiceVariant::query();
-        $paginate = $query->paginate($limit);
-        return ServiceVariantResource::collection($paginate);
+        $query = ServiceVariant::query()
+            ->orderBy('name')
+            ->get();
+        return ServiceVariantResource::collection($query);
     }
 
 
