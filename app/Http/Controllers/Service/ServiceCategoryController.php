@@ -15,10 +15,10 @@ class ServiceCategoryController extends Controller
      */
     public function index()
     {
-        $limit = request()->limit ?: 50;
-        $query = ServiceCategory::query();
-        $paginate = $query->paginate($limit);
-        return ServiceCategoryResource::collection($paginate);
+        $query = ServiceCategory::query()
+            ->orderBy('name')
+            ->get();
+        return ServiceCategoryResource::collection($query);
     }
 
     /**

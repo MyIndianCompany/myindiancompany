@@ -15,10 +15,10 @@ class ServiceTagController extends Controller
      */
     public function index()
     {
-        $limit = request()->limit ?: 50;
-        $query = ServiceTag::query();
-        $paginate = $query->paginate($limit);
-        return ServiceTagResource::collection($paginate);
+        $query = ServiceTag::query()
+            ->orderBy('name')
+            ->get();
+        return ServiceTagResource::collection($query);
     }
 
     /**

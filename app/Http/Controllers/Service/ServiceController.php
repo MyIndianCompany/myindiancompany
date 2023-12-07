@@ -15,10 +15,11 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $limit = request()->limit ?: 50;
-        $query = Service::query()->with(['categories','variants']);
-        $paginate = $query->paginate($limit);
-        return ServiceResource::collection($paginate);
+        $query = Service::query()
+            ->with(['categories','variants'])
+            ->orderBy('name')
+            ->get();
+        return ServiceResource::collection($query);
     }
 
     /**
