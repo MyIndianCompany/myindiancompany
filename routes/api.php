@@ -49,8 +49,6 @@ Route::prefix('agent')->group(function () {
 });
 
 
-
-Route::middleware('auth:api')->group(function () {
     /*
      * Country
      */
@@ -154,5 +152,4 @@ Route::middleware('auth:api')->group(function () {
                 });
             });
         });
-});
 
