@@ -111,9 +111,11 @@ Route::prefix('agent')->group(function () {
             Route::controller(ServiceController::class)->group(function () {
                 Route::get('all', 'index');
                 Route::get('{service}', 'show');
-                Route::post('add', 'create');
-                Route::patch('{service}', 'update');
-                Route::delete('{service}', 'destroy');
+                Route::middleware('auth:api')->group(function () {
+                    Route::post('add', 'create');
+                    Route::patch('{service}', 'update');
+                    Route::delete('{service}', 'destroy');
+                });
             });
             /*
              * Service categories
@@ -122,9 +124,11 @@ Route::prefix('agent')->group(function () {
                 Route::prefix('category')->group(function () {
                     Route::get('all', 'index');
                     Route::get('{serviceCategory}', 'show');
-                    Route::post('add', 'create');
-                    Route::patch('{serviceCategory}', 'update');
-                    Route::delete('{serviceCategory}', 'destroy');
+                    Route::middleware('auth:api')->group(function () {
+                        Route::post('add', 'create');
+                        Route::patch('{serviceCategory}', 'update');
+                        Route::delete('{serviceCategory}', 'destroy');
+                    });
                 });
             });
             /*
@@ -134,9 +138,11 @@ Route::prefix('agent')->group(function () {
                 Route::prefix('tag')->group(function () {
                     Route::get('all', 'index');
                     Route::get('{serviceTag}', 'show');
-                    Route::post('add', 'create');
-                    Route::patch('{serviceTag}', 'update');
-                    Route::delete('{serviceTag}', 'destroy');
+                    Route::middleware('auth:api')->group(function () {
+                        Route::post('add', 'create');
+                        Route::patch('{serviceTag}', 'update');
+                        Route::delete('{serviceTag}', 'destroy');
+                    });
                 });
             });
             /*
@@ -146,9 +152,11 @@ Route::prefix('agent')->group(function () {
                 Route::prefix('variant')->group(function () {
                     Route::get('all', 'index');
                     Route::get('{serviceVariant}', 'show');
-                    Route::post('add', 'create');
-                    Route::patch('{serviceVariant}', 'update');
-                    Route::delete('{serviceVariant}', 'destroy');
+                    Route::middleware('auth:api')->group(function () {
+                        Route::post('add', 'create');
+                        Route::patch('{serviceVariant}', 'update');
+                        Route::delete('{serviceVariant}', 'destroy');
+                    });
                 });
             });
         });
