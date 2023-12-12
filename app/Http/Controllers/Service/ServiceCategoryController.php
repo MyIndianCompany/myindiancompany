@@ -44,7 +44,7 @@ class ServiceCategoryController extends Controller
             report($exception);
             return response()->json([
                 'message' => 'We encountered an issue while attempting to create the service category.',
-                'error' => $exception
+                'error' => $exception->getMessage()
             ], 401);
         }
     }
@@ -89,7 +89,7 @@ class ServiceCategoryController extends Controller
             report($exception);
             return response()->json([
                 'message' => 'We encountered an issue while attempting to update the service category.',
-                'error' => $exception
+                'error' => $exception->getMessage()
             ], 401);
         }
     }
@@ -111,7 +111,7 @@ class ServiceCategoryController extends Controller
             report($exception);
             return response()->json([
                 'message' => 'We encountered an issue while attempting to update the service category.',
-                'error' => $exception
+                'error' => $exception->getMessage()
             ], 401);
         }
     }
