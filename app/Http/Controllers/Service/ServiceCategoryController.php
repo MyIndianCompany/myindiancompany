@@ -115,4 +115,11 @@ class ServiceCategoryController extends Controller
             ], 401);
         }
     }
+
+    public function getServices(ServiceCategory $serviceCategory)
+    {
+        $services = $serviceCategory->services;
+        return ServiceCategoryResource::collection($services);
+
+    }
 }

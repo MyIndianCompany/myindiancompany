@@ -124,7 +124,8 @@ Route::prefix('agent')->group(function () {
             Route::controller(ServiceCategoryController::class)->group(function () {
                 Route::prefix('category')->group(function () {
                     Route::get('all', 'index');
-                    Route::get('{serviceCategory}', 'show');
+                    Route::get('single/{serviceCategory}', 'show');
+                    Route::get('{serviceCategory}', 'getServices');
                     Route::middleware('auth:api')->group(function () {
                         Route::post('add', 'create');
                         Route::patch('{serviceCategory}', 'update');
