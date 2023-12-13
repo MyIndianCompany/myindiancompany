@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('service_code')->nullable();
-            $table->string('description')->nullable();
-            $table->string('price')->nullable();
+            $table->text('description')->nullable();
+            $table->float('price')->nullable();
             $table->string('slug')->nullable();
-            $table->string('remark')->nullable();
+            $table->text('remark')->nullable();
 
             $table->unsignedTinyInteger('status')
                 ->default(1)
