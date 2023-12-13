@@ -73,4 +73,9 @@ class ServiceCategory extends Model
     {
         return $this->hasMany(Agent::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(ServiceCategoryFile::class);
+    }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Service;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Service\ServiceResource;
+use App\Imports\Service\ServiceImport;
 use App\Models\Service\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Bus\PendingDispatch;
 
 class ServiceController extends Controller
 {
@@ -16,7 +18,6 @@ class ServiceController extends Controller
     public function index()
     {
         $query = Service::query()
-            ->with(['categories','variants'])
             ->orderBy('name')
             ->get();
         return ServiceResource::collection($query);
@@ -120,6 +121,25 @@ class ServiceController extends Controller
             return response()->json([
                 'message' => 'We encountered an issue while attempting to delete the service.',
                 'error' => $exception
+            ], 401);
+        }
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            (new ServiceImport)->queue($request->file('file'));
+            DB::commit();
+            return response()->json([
+                'message' => 'Successful bulk import',
+            ], 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return response()->json([
+                'message' => 'Fail',
+                'error' => $exception->getMessage()
             ], 401);
         }
     }
