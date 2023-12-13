@@ -34,7 +34,7 @@ class AgentController extends Controller
      */
     public function show(Agent $agent)
     {
-        $getAgent = Agent::join('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
+        $getAgent = Agent::where('agents.id', $agent->id)->join('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
             ->join('contacts', 'agent_contact.contact_id', '=', 'contacts.id')
             ->join('cities', 'contacts.city_id', '=', 'cities.id')
             ->join('districts', 'contacts.district_id', '=', 'districts.id')
@@ -54,7 +54,6 @@ class AgentController extends Controller
                 'contacts.zip_code as zip_code',
                 'agents.photo as photo'
             )
-            ->where('agents.id', $agent->id)
             ->first();
 
         if (!$getAgent) {
