@@ -128,7 +128,7 @@ Route::prefix('agent')->group(function () {
                     Route::get('{serviceCategory}', 'getServices');
                     Route::middleware('auth:api')->group(function () {
                         Route::post('add', 'create');
-                        Route::patch('{serviceCategory}', 'update');
+                        Route::post('{serviceCategory}', 'update');
                         Route::delete('{serviceCategory}', 'destroy');
                     });
                 });
