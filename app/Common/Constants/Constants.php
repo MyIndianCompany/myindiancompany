@@ -9,5 +9,5 @@ class Constants
     const USER_ADMIN = 'admin';
 
     //Service Category File Path
-    const SERVICE_CATEGORY_FILE_PATH = "/service_category/";
+    const SERVICE_CATEGORY_FILE_PATH = "/service_category";
 }
