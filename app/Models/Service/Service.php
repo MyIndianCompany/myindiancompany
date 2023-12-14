@@ -73,4 +73,9 @@ class Service extends Model
     {
         return $this->hasMany(ServiceVariant::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(ServiceFile::class, 'service_id');
+    }
 }
