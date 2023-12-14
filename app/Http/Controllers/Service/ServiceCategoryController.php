@@ -91,19 +91,55 @@ class ServiceCategoryController extends Controller
      */
     public function update(Request $request, ServiceCategory $serviceCategory)
     {
+//        dd($request->all());
         try {
+            $uploadedFiles = $request->file('files');
+            $filesToDelete = $request->input('files_to_delete');
+
             DB::beginTransaction();
+
             $serviceCategory->update([
                 'service_category_id' => $request->input('service_category_id'),
-                'name' => $request->input('name'),
-                'description' => $request->input('description'),
-                'slug' => $request->input('slug'),
-                'remark' => $request->input('remark')
+                'name'                => $request->input('name'),
+                'description'         => $request->input('description'),
+                'slug'                => $request->input('slug'),
+                'remark'              => $request->input('remark')
             ]);
+
+            // Handle files to delete
+            if ($filesToDelete) {
+                foreach ($filesToDelete as $fileId) {
+                    $fileToDelete = ServiceCategoryFile::where('category_id', $serviceCategory->id)
+                        ->where('id', $fileId)
+                        ->first();
+
+                    if ($fileToDelete) {
+                        Storage::delete($fileToDelete->file);
+                        $fileToDelete->delete();
+                    }
+                }
+            }
+
+            // Handle uploaded files
+            if($uploadedFiles) {
+                foreach ($uploadedFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $serviceCategoryFile = [
+                        'category_id' => $serviceCategory->id,
+                        'original_file_name' => $originalFileName,
+                        'file' => $fileUrl,
+                        'mime_type' => $file->getMimeType(),
+                    ];
+                    ServiceCategoryFile::create($serviceCategoryFile);
+                }
+            }
+
             DB::commit();
             return response()->json([
                 'message' => 'The service category has been successfully updated.'
-            ], 201);
+            ], 200);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
@@ -113,6 +149,7 @@ class ServiceCategoryController extends Controller
             ], 401);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
