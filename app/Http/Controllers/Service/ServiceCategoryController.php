@@ -91,7 +91,6 @@ class ServiceCategoryController extends Controller
      */
     public function update(Request $request, ServiceCategory $serviceCategory)
     {
-//        dd($request->all());
         try {
             $uploadedFiles = $request->file('files');
             $filesToDelete = $request->input('files_to_delete');
@@ -99,11 +98,17 @@ class ServiceCategoryController extends Controller
             DB::beginTransaction();
 
             $serviceCategory->update([
-                'service_category_id' => $request->input('service_category_id'),
-                'name'                => $request->input('name'),
-                'description'         => $request->input('description'),
-                'slug'                => $request->input('slug'),
-                'remark'              => $request->input('remark')
+//                'service_category_id' => $request->input('service_category_id'),
+//                'name'                => $request->input('name'),
+//                'description'         => $request->input('description'),
+//                'slug'                => $request->input('slug'),
+//                'remark'              => $request->input('remark'),
+
+                'service_category_id' => $request->has('service_category_id') ? $request->input('service_category_id') : $serviceCategory->service_category_id,
+                'name'                => $request->has('name') ? $request->input('name') : $serviceCategory->name,
+                'description'         => $request->has('description') ? $request->input('description') : $serviceCategory->description,
+                'slug'                => $request->has('slug') ? $request->input('slug') : $serviceCategory->slug,
+                'remark'              => $request->has('remark') ? $request->input('remark') : $serviceCategory->remark,
             ]);
 
             // Handle files to delete
