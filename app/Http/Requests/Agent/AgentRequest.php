@@ -22,7 +22,6 @@ class AgentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
             'service_category_id' => 'required|exists:service_categories,id',
             'city_id' => 'required|exists:cities,id'
         ];
