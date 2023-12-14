@@ -36,10 +36,10 @@ class ServiceCategoryController extends Controller
             DB::beginTransaction();
             $serviceCategory = ServiceCategory::create([
                 'service_category_id' => $request->input('service_category_id'),
-                'name' => $request->input('name'),
-                'description' => $request->input('description'),
-                'slug' => $request->input('slug'),
-                'remark' => $request->input('remark')
+                'name'                => $request->input('name'),
+                'description'         => $request->input('description'),
+                'slug'                => $request->input('slug'),
+                'remark'              => $request->input('remark')
             ]);
             if($files) {
                 foreach ($files as $file) {
@@ -47,10 +47,10 @@ class ServiceCategoryController extends Controller
                     $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
                     $fileUrl = Storage::disk('s3')->url($fileName);
                     $serviceCategoryFile = [
-                        'category_id' => $serviceCategory->id,
+                        'category_id'        => $serviceCategory->id,
                         'original_file_name' => $originalFileName,
-                        'file' => $fileUrl,
-                        'mime_type' => $file->getMimeType(),
+                        'file'               => $fileUrl,
+                        'mime_type'          => $file->getMimeType(),
                     ];
                     ServiceCategoryFile::create($serviceCategoryFile);
                 }
@@ -98,12 +98,6 @@ class ServiceCategoryController extends Controller
             DB::beginTransaction();
 
             $serviceCategory->update([
-//                'service_category_id' => $request->input('service_category_id'),
-//                'name'                => $request->input('name'),
-//                'description'         => $request->input('description'),
-//                'slug'                => $request->input('slug'),
-//                'remark'              => $request->input('remark'),
-
                 'service_category_id' => $request->has('service_category_id') ? $request->input('service_category_id') : $serviceCategory->service_category_id,
                 'name'                => $request->has('name') ? $request->input('name') : $serviceCategory->name,
                 'description'         => $request->has('description') ? $request->input('description') : $serviceCategory->description,

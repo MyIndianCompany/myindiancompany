@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Service;
 
+use App\Common\Constants\Constants;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Service\ServiceResource;
 use App\Imports\Service\ServiceImport;
 use App\Models\Service\Service;
+use App\Models\Service\ServiceFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\PendingDispatch;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
@@ -18,6 +21,7 @@ class ServiceController extends Controller
     public function index()
     {
         $query = Service::query()
+            ->with('files')
             ->orderBy('name')
             ->get();
         return ServiceResource::collection($query);
@@ -31,16 +35,31 @@ class ServiceController extends Controller
         try {
             DB::beginTransaction();
             $service = Service::create([
-                'name' => $request->input('name'),
+                'name'         => $request->input('name'),
                 'service_code' => $request->input('service_code'),
-                'description' => $request->input('description'),
-                'price' => $request->input('price'),
-                'slug' => $request->input('slug'),
-                'remark' => $request->input('remark')
+                'description'  => $request->input('description'),
+                'price'        => $request->input('price'),
+                'slug'         => $request->input('slug'),
+                'remark'       => $request->input('remark')
             ]);
 
             $categories = $request->input('category_id');
             $service->categories()->attach($categories);
+            $files =  $request->file('files');
+            if($files) {
+                foreach ($files as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $serviceFile = [
+                        'service_id'         => $service->id,
+                        'original_file_name' => $originalFileName,
+                        'file'               => $fileUrl,
+                        'mime_type'          => $file->getMimeType()
+                    ];
+                    ServiceFile::create($serviceFile);
+                }
+            }
 
             DB::commit();
             return response()->json([
@@ -51,7 +70,7 @@ class ServiceController extends Controller
             report($exception);
             return response()->json([
                 'message' => 'We encountered an issue while attempting to create the service.',
-                'error' => $exception
+                'error' => $exception->getMessage()
             ], 401);
         }
     }
@@ -78,17 +97,51 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         try {
+            $uploadedFiles = $request->file('files');
+            $filesToDelete = $request->input('files_to_delete');
+
             DB::beginTransaction();
             $service->update([
-                'name' => $request->input('name'),
-                'service_code' => $request->input('service_code'),
-                'description' => $request->input('description'),
-                'price' => $request->input('price'),
-                'slug' => $request->input('slug'),
-                'remark' => $request->input('remark')
+                'name'         => $request->has('name') ? $request->input('name') : $service->name,
+                'service_code' => $request->has('service_code') ? $request->input('service_code') : $service->service_code,
+                'description'  => $request->has('description') ? $request->input('description') : $service->description,
+                'price'        => $request->has('price') ? $request->input('price') : $service->price,
+                'slug'         => $request->has('slug') ? $request->input('slug') : $service->slug,
+                'remark'       => $request->has('remark') ? $request->input('remark') : $service->remark
             ]);
-            $categories = $request->input('category_id');
-            $service->categories()->sync($categories);
+//            $categories = $request->has('category_id') ? $request->input('category_id') : $service->categories->id;
+//            $service->categories()->sync($categories);
+
+            // Handle files to delete
+            if ($filesToDelete) {
+                foreach ($filesToDelete as $fileId) {
+                    $fileToDelete = ServiceFile::where('service_id', $service->id)
+                        ->where('id', $fileId)
+                        ->first();
+
+                    if ($fileToDelete) {
+                        Storage::delete($fileToDelete->file);
+                        $fileToDelete->delete();
+                    }
+                }
+            }
+
+            // Handle uploaded files
+            if($uploadedFiles) {
+                foreach ($uploadedFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $serviceFile = [
+                        'service_id' => $service->id,
+                        'original_file_name' => $originalFileName,
+                        'file' => $fileUrl,
+                        'mime_type' => $file->getMimeType(),
+                    ];
+                    ServiceFile::create($serviceFile);
+                }
+            }
+
             DB::commit();
             return response()->json([
                 'message' => 'The service has been successfully updated.'
@@ -98,7 +151,7 @@ class ServiceController extends Controller
             report($exception);
             return response()->json([
                 'message' => 'We encountered an issue while attempting to update the service.',
-                'error' => $exception
+                'error' => $exception->getMessage()
             ], 401);
         }
     }

@@ -114,7 +114,7 @@ Route::prefix('agent')->group(function () {
                 Route::middleware('auth:api')->group(function () {
                     Route::post('add', 'create');
                     Route::post('bulk/import', 'import');
-                    Route::patch('{service}', 'update');
+                    Route::post('{service}', 'update');
                     Route::delete('{service}', 'destroy');
                 });
             });
