@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Service;
 
+use App\Common\Constants\Constants;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Service\ServiceCategoryResource;
 use App\Models\Service\ServiceCategory;
+use App\Models\Service\ServiceCategoryFile;
+use App\Utility\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceCategoryController extends Controller
 {
@@ -16,6 +20,7 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         $query = ServiceCategory::query()
+            ->with('files')
             ->orderBy('name')
             ->get();
         return ServiceCategoryResource::collection($query);
@@ -27,14 +32,29 @@ class ServiceCategoryController extends Controller
     public function create(Request $request)
     {
         try {
+            $files =  $request->file('files');
             DB::beginTransaction();
-            ServiceCategory::create([
+            $serviceCategory = ServiceCategory::create([
                 'service_category_id' => $request->input('service_category_id'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'slug' => $request->input('slug'),
                 'remark' => $request->input('remark')
             ]);
+            if($files) {
+                foreach ($files as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $serviceCategoryFile = [
+                        'category_id' => $serviceCategory->id,
+                        'original_file_name' => $originalFileName,
+                        'file' => $fileUrl,
+                        'mime_type' => $file->getMimeType(),
+                    ];
+                    ServiceCategoryFile::create($serviceCategoryFile);
+                }
+            }
             DB::commit();
             return response()->json([
                 'message' => 'The service category has been successfully created.'

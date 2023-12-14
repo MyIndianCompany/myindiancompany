@@ -76,6 +76,6 @@ class ServiceCategory extends Model
 
     public function files()
     {
-        return $this->hasMany(ServiceCategoryFile::class);
+        return $this->hasMany(ServiceCategoryFile::class, 'category_id');
     }
 }
