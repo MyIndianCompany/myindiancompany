@@ -109,10 +109,7 @@ class ServiceController extends Controller
                 'slug'         => $request->has('slug') ? $request->input('slug') : $service->slug,
                 'remark'       => $request->has('remark') ? $request->input('remark') : $service->remark
             ]);
-//            $categories = $request->has('category_id') ? $request->input('category_id') : $service->categories->id;
-//            $service->categories()->sync($categories);
 
-            // Handle files to delete
             if ($filesToDelete) {
                 foreach ($filesToDelete as $fileId) {
                     $fileToDelete = ServiceFile::where('service_id', $service->id)
@@ -126,7 +123,6 @@ class ServiceController extends Controller
                 }
             }
 
-            // Handle uploaded files
             if($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
                     $originalFileName = $file->getClientOriginalName();
