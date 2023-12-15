@@ -174,7 +174,7 @@ class ServiceCategoryController extends Controller
 
     public function getServices(ServiceCategory $serviceCategory)
     {
-        $services = $serviceCategory->services;
+        $services = $serviceCategory->services()->with('files')->get();
         return ServiceCategoryResource::collection($services);
 
     }

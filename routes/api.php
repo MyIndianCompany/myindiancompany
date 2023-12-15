@@ -12,6 +12,7 @@ use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\Service\ServiceCategoryController;
 use App\Http\Controllers\Service\ServiceTagController;
 use App\Http\Controllers\Service\ServiceVariantController;
+use App\Http\Controllers\CustomerEnquiryController;
 
 
 /*
@@ -160,6 +161,13 @@ Route::prefix('agent')->group(function () {
                         Route::delete('{serviceVariant}', 'destroy');
                     });
                 });
+            });
+        });
+
+        Route::controller(CustomerEnquiryController::class)->group(function () {
+            Route::prefix('customer')->group(function () {
+                Route::get('enquiries', 'index');
+                Route::post('enquiry', 'create');
             });
         });
 
