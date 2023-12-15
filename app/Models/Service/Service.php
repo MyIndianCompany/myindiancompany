@@ -2,6 +2,7 @@
 
 namespace App\Models\Service;
 
+use App\Models\CustomerEnquiry;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -77,5 +78,10 @@ class Service extends Model
     public function files()
     {
         return $this->hasMany(ServiceFile::class, 'service_id');
+    }
+
+    public function CustomerEnquiries()
+    {
+        return $this->hasMany(CustomerEnquiry::class, 'service');
     }
 }
