@@ -53,14 +53,14 @@ class CityController extends Controller
             ]);
             DB::commit();
             return response()->json([
-                'message' => 'The city has been successfully created.'
+                'message' => 'Task completed.'
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'We encountered an issue while attempting to create the city.',
-                'error' => $exception
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
             ], 401);
         }
     }

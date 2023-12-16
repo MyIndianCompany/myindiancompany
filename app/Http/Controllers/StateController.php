@@ -34,15 +34,15 @@ class StateController extends Controller
             ]);
             DB::commit();
             return response()->json([
-                'message' => 'The state has been successfully created.'
-            ], 200);
+                'message' => 'Task completed.'
+            ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'We encountered an issue while attempting to create the state.',
-                'error' => $exception
-            ]);
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
         }
     }
 

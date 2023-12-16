@@ -40,13 +40,13 @@ class CustomerEnquiryController extends Controller
             CustomerEnquiry::create($request->validated());
             DB::commit();
             return response()->json([
-                'message' => 'Done'
-            ]);
+                'message' => 'Task completed.'
+            ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'Fail',
+                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }

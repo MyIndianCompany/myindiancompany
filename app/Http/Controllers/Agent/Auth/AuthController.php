@@ -62,13 +62,13 @@ class AuthController extends Controller
             $agent->contacts()->attach($contact->id);
             DB::commit();
             return $authService->respondWithToken($user, $token, 'User registered successfully');
-        } catch (\Exception $err) {
+        } catch (\Exception $exception) {
             DB::rollBack();
-            report($err);
+            report($exception);
             return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to register user',
-            ], 500);
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
         }
     }
 
