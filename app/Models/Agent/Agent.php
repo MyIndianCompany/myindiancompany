@@ -46,4 +46,9 @@ class Agent extends Model
     {
         return $this->belongsTo(ServiceCategory::class);
     }
+
+    public function AgentBankAccounts()
+    {
+        return $this->hasMany(AgentBankAccount::class, 'agent_id');
+    }
 }

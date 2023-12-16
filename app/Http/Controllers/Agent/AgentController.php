@@ -60,38 +60,8 @@ class AgentController extends Controller
         if (!$getAgent) {
             throw new MicException('Agent not found');
         }
-
-//        $city = $getAgent->city ?? '';
-//        $district = $getAgent->district ?? '';
-//        $state = $getAgent->state ?? '';
-//
-//        $address = implode(', ', array_filter([$city, $district, $state]));
-//        $getAgent->address = $address;
-
         return new AgentResource($getAgent);
     }
-
-//    public function showed(Request $request, Agent $agent)
-//    {
-//        try {
-//            $agentRelation = Agent::with([
-//                'serviceCategory',
-//                'contacts.country',
-//                'contacts.state',
-//                'contacts.district',
-//                'contacts.city',
-//            ])->find($agent->id);
-//
-//            if (!$agentRelation) {
-//                return response()->json(['message' => 'Agent not found'], 404);
-//            }
-//
-//            return response()->json(['agent' => $agentRelation], 200);
-//        } catch (\Exception $err) {
-//            report($err);
-//            return response()->json(['message' => 'Error Occurred', 'error' => $err], 500);
-//        }
-//    }
 
     /**
      * Update the specified resource in storage.
@@ -111,15 +81,15 @@ class AgentController extends Controller
             ]);
             DB::commit();
             return response()->json([
-                'message' => 'Account updated successfully.'
+                'message' => 'Task completed.'
             ], 201);
-        } catch (\Exception $err) {
+        } catch (\Exception $exception) {
             DB::rollBack();
-            report($err);
+            report($exception);
             return response()->json([
-                'message' => 'Failed to update account!',
-                'error' => $err->getMessage()
-            ], 500);
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
         }
     }
 

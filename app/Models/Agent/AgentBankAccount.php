@@ -64,4 +64,9 @@ class AgentBankAccount extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
 }
