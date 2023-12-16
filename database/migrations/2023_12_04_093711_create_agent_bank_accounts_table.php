@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('account_number');
             $table->string('type')->nullable();
             $table->string('ifsc');
-            $table->string('pan_number')->nullable();
-            $table->string('aadhaar_number')->nullable();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -13,6 +13,7 @@ use App\Http\Controllers\Service\ServiceCategoryController;
 use App\Http\Controllers\Service\ServiceTagController;
 use App\Http\Controllers\Service\ServiceVariantController;
 use App\Http\Controllers\CustomerEnquiryController;
+use App\Http\Controllers\Agent\Financial\AgentBankAccountController;
 
 
 /*
@@ -46,128 +47,140 @@ Route::prefix('agent')->group(function () {
             });
         });
     });
-
 });
 
-
-    /*
-     * Country
-     */
-    Route::controller(CountryController::class)->group(function () {
-        Route::prefix('country')->group(function () {
-            Route::get('all', 'index');
-            Route::get('{country}', 'show');
-            Route::post('add', 'create');
-            Route::patch('{country}', 'update');
-            Route::delete('{country}', 'destroy');
+/*
+*  Agent Financial
+*/
+Route::prefix('agent/bank')->group(function () {
+    Route::middleware('auth:api')->group(function () {
+        Route::controller(AgentBankAccountController::class)->group(function () {
+            Route::get('details', 'index');
+            Route::post('account', 'store');
+            Route::patch('{agentBankAccount}', 'update');
+            Route::delete('{agentBankAccount}', 'destroy');
         });
     });
+});
 
+/*
+* Country
+*/
+Route::controller(CountryController::class)->group(function () {
+    Route::prefix('country')->group(function () {
+        Route::get('all', 'index');
+        Route::get('{country}', 'show');
+        Route::post('add', 'create');
+        Route::patch('{country}', 'update');
+        Route::delete('{country}', 'destroy');
+    });
+});
+
+/*
+* State
+*/
+Route::controller(StateController::class)->group(function () {
+    Route::prefix('state')->group(function () {
+        Route::get('all', 'index');
+        Route::get('{state}', 'show');
+        Route::post('add', 'create');
+        Route::patch('{state}', 'update');
+        Route::delete('{state}', 'destroy');
+    });
+});
+
+/*
+* District
+*/
+Route::controller(DistrictController::class)->group(function () {
+    Route::prefix('district')->group(function () {
+        Route::get('all', 'index');
+        Route::get('{district}', 'show');
+        Route::post('add', 'create');
+        Route::patch('{district}', 'update');
+        Route::delete('{district}', 'destroy');
+    });
+});
+
+/*
+* City
+*/
+Route::controller(CityController::class)->group(function () {
+    Route::prefix('city')->group(function () {
+        Route::get('all', 'index');
+        Route::get('{city}', 'show');
+        Route::post('add', 'create');
+        Route::patch('{city}', 'update');
+        Route::delete('{city}', 'destroy');
+    });
+});
+
+/*
+* Manage Service
+*/
+Route::prefix('service')->group(function () {
     /*
-     * State
-     */
-    Route::controller(StateController::class)->group(function () {
-        Route::prefix('state')->group(function () {
-            Route::get('all', 'index');
-            Route::get('{state}', 'show');
+    * Services
+    */
+    Route::controller(ServiceController::class)->group(function () {
+        Route::get('all', 'index');
+        Route::get('{service}', 'show');
+        Route::middleware('auth:api')->group(function () {
             Route::post('add', 'create');
-            Route::patch('{state}', 'update');
-            Route::delete('{state}', 'destroy');
+            Route::post('bulk/import', 'import');
+            Route::post('{service}', 'update');
+            Route::delete('{service}', 'destroy');
         });
     });
-
     /*
-     * District
-     */
-    Route::controller(DistrictController::class)->group(function () {
-        Route::prefix('district')->group(function () {
+    * Service categories
+    */
+    Route::controller(ServiceCategoryController::class)->group(function () {
+        Route::prefix('category')->group(function () {
             Route::get('all', 'index');
-            Route::get('{district}', 'show');
-            Route::post('add', 'create');
-            Route::patch('{district}', 'update');
-            Route::delete('{district}', 'destroy');
+            Route::get('single/{serviceCategory}', 'show');
+            Route::get('{serviceCategory}', 'getServices');
+            Route::middleware('auth:api')->group(function () {
+                Route::post('add', 'create');
+                Route::post('{serviceCategory}', 'update');
+                Route::delete('{serviceCategory}', 'destroy');
+            });
         });
     });
-
     /*
-     * City
+     * Service Tags
      */
-    Route::controller(CityController::class)->group(function () {
-        Route::prefix('city')->group(function () {
+    Route::controller(ServiceTagController::class)->group(function () {
+        Route::prefix('tag')->group(function () {
             Route::get('all', 'index');
-            Route::get('{city}', 'show');
-            Route::post('add', 'create');
-            Route::patch('{city}', 'update');
-            Route::delete('{city}', 'destroy');
+            Route::get('{serviceTag}', 'show');
+            Route::middleware('auth:api')->group(function () {
+                Route::post('add', 'create');
+                Route::patch('{serviceTag}', 'update');
+                Route::delete('{serviceTag}', 'destroy');
+            });
         });
     });
-
     /*
-     * Manage Service
+     * Service Variants
      */
-        Route::prefix('service')->group(function () {
-            /*
-             * Services
-             */
-            Route::controller(ServiceController::class)->group(function () {
-                Route::get('all', 'index');
-                Route::get('{service}', 'show');
-                Route::middleware('auth:api')->group(function () {
-                    Route::post('add', 'create');
-                    Route::post('bulk/import', 'import');
-                    Route::post('{service}', 'update');
-                    Route::delete('{service}', 'destroy');
-                });
-            });
-            /*
-             * Service categories
-             */
-            Route::controller(ServiceCategoryController::class)->group(function () {
-                Route::prefix('category')->group(function () {
-                    Route::get('all', 'index');
-                    Route::get('single/{serviceCategory}', 'show');
-                    Route::get('{serviceCategory}', 'getServices');
-                    Route::middleware('auth:api')->group(function () {
-                        Route::post('add', 'create');
-                        Route::post('{serviceCategory}', 'update');
-                        Route::delete('{serviceCategory}', 'destroy');
-                    });
-                });
-            });
-            /*
-             * Service Tags
-             */
-            Route::controller(ServiceTagController::class)->group(function () {
-                Route::prefix('tag')->group(function () {
-                    Route::get('all', 'index');
-                    Route::get('{serviceTag}', 'show');
-                    Route::middleware('auth:api')->group(function () {
-                        Route::post('add', 'create');
-                        Route::patch('{serviceTag}', 'update');
-                        Route::delete('{serviceTag}', 'destroy');
-                    });
-                });
-            });
-            /*
-             * Service Variants
-             */
-            Route::controller(ServiceVariantController::class)->group(function () {
-                Route::prefix('variant')->group(function () {
-                    Route::get('all', 'index');
-                    Route::get('{serviceVariant}', 'show');
-                    Route::middleware('auth:api')->group(function () {
-                        Route::post('add', 'create');
-                        Route::patch('{serviceVariant}', 'update');
-                        Route::delete('{serviceVariant}', 'destroy');
-                    });
-                });
+    Route::controller(ServiceVariantController::class)->group(function () {
+        Route::prefix('variant')->group(function () {
+            Route::get('all', 'index');
+            Route::get('{serviceVariant}', 'show');
+            Route::middleware('auth:api')->group(function () {
+                Route::post('add', 'create');
+                Route::patch('{serviceVariant}', 'update');
+                Route::delete('{serviceVariant}', 'destroy');
             });
         });
+    });
+});
 
-        Route::controller(CustomerEnquiryController::class)->group(function () {
-            Route::prefix('customer')->group(function () {
-                Route::get('enquiries', 'index');
-                Route::post('enquiry', 'create');
-            });
-        });
+Route::controller(CustomerEnquiryController::class)->group(function () {
+    Route::prefix('customer')->group(function () {
+        Route::get('enquiries', 'index');
+        Route::post('enquiry', 'create');
+    });
+});
 

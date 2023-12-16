@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name', 255)->nullable();
             $table->unsignedBigInteger('service_category_id')->nullable()->comment('Job Title');
             $table->enum('gender', ['M', 'F', 'O'])->nullable();
-            $table->string('aadhaar_number', 225)->nullable();
-            $table->string('pan_number', 225)->nullable();
+            $table->string('aadhaar_card_docs', 225)->nullable();
+            $table->string('pan_card_docs', 225)->nullable();
             $table->string('photo', 255)->nullable();
 
             $table->timestamps();
