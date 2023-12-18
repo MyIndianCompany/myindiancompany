@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Agent;
 
+use App\Common\Constants\Constants;
 use App\Exception\CustomException\MicException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Agent\AgentRequest;
@@ -10,6 +11,7 @@ use App\Models\Agent\Agent;
 use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AgentController extends Controller
 {
@@ -79,6 +81,34 @@ class AgentController extends Controller
                 'district_id' => $city->district->id,
                 'city_id'     => $city->id
             ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Task completed.'
+            ], 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return response()->json([
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
+        }
+    }
+
+    public function updateDocument(Request $request, Agent $agent)
+    {
+        try {
+            $uploadedFiles = $request->file('pan_card_docs');
+            DB::beginTransaction();
+            if ($uploadedFiles) {
+                foreach ($uploadedFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::AGENT_PAN_CARD, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $agent->pan_card_docs = $fileUrl;
+                    $agent->save();
+                }
+            }
             DB::commit();
             return response()->json([
                 'message' => 'Task completed.'

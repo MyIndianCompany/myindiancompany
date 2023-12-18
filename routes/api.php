@@ -43,6 +43,7 @@ Route::prefix('agent')->group(function () {
             Route::post('logout', 'logout');
             Route::controller(AgentController::class)->group(function () {
                 Route::get('{agent}', 'show');
+                Route::post('document/{agent}', 'updateDocument');
                 Route::patch('{agent}', 'update');
             });
         });

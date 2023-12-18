@@ -11,4 +11,8 @@ class Constants
     //Service Category File Path
     const SERVICE_FILE_PATH = "/service";
     const SERVICE_CATEGORY_FILE_PATH = "/service_category";
+
+    //Agent Document
+
+    const AGENT_PAN_CARD = "/agent/pan_card";
 }
