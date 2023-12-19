@@ -125,6 +125,7 @@ Route::prefix('service')->group(function () {
     */
     Route::controller(ServiceController::class)->group(function () {
         Route::get('all', 'index');
+        Route::get('images', 'serviceFiles');
         Route::get('{service}', 'show');
         Route::middleware('auth:api')->group(function () {
             Route::post('add', 'create');
@@ -139,6 +140,7 @@ Route::prefix('service')->group(function () {
     Route::controller(ServiceCategoryController::class)->group(function () {
         Route::prefix('category')->group(function () {
             Route::get('all', 'index');
+            Route::get('images', 'categoryFiles');
             Route::get('single/{serviceCategory}', 'show');
             Route::get('{serviceCategory}', 'getServices');
             Route::middleware('auth:api')->group(function () {
