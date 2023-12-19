@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Service\ServiceCategoryResource;
 use App\Models\Service\ServiceCategory;
 use App\Models\Service\ServiceCategoryFile;
+use App\Services\ManageServices\ManageServicesService;
 use App\Utility\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -137,13 +138,13 @@ class ServiceCategoryController extends Controller
 
             DB::commit();
             return response()->json([
-                'message' => 'The service category has been successfully updated.'
-            ], 200);
+                'message' => 'Task completed.'
+            ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'We encountered an issue while attempting to update the service category.',
+                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
@@ -160,13 +161,13 @@ class ServiceCategoryController extends Controller
             $serviceCategory->delete();
             DB::commit();
             return response()->json([
-                'message' => 'The service category has been successfully updated.'
+                'message' => 'Task completed.'
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'We encountered an issue while attempting to update the service category.',
+                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
@@ -174,8 +175,15 @@ class ServiceCategoryController extends Controller
 
     public function getServices(ServiceCategory $serviceCategory)
     {
-        $services = $serviceCategory->services()->with('files')->get();
+        $services = $serviceCategory->services()->with(['files', 'categories' => function ($query) {
+            $query->select('name');
+        }])->get();
         return ServiceCategoryResource::collection($services);
+    }
 
+    public function categoryFiles()
+    {
+        $obj = new ManageServicesService();
+        return $obj->retrieveCategoryFiles();
     }
 }

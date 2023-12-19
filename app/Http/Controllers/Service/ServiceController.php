@@ -8,6 +8,7 @@ use App\Http\Resources\Service\ServiceResource;
 use App\Imports\Service\ServiceImport;
 use App\Models\Service\Service;
 use App\Models\Service\ServiceFile;
+use App\Services\ManageServices\ManageServicesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\PendingDispatch;
@@ -21,7 +22,7 @@ class ServiceController extends Controller
     public function index()
     {
         $query = Service::query()
-            ->with('files')
+            ->with(['files','variants'])
             ->orderBy('name')
             ->get();
         return ServiceResource::collection($query);
@@ -140,13 +141,13 @@ class ServiceController extends Controller
 
             DB::commit();
             return response()->json([
-                'message' => 'The service has been successfully updated.'
+                'message' => 'Task completed.'
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'We encountered an issue while attempting to update the service.',
+                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
@@ -181,15 +182,21 @@ class ServiceController extends Controller
             (new ServiceImport)->queue($request->file('file'));
             DB::commit();
             return response()->json([
-                'message' => 'Successful bulk import',
+                'message' => 'Task completed.'
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'Fail',
+                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
+    }
+
+    public function serviceFiles()
+    {
+        $obj = new ManageServicesService();
+        return $obj->retrieveServiceFiles();
     }
 }
