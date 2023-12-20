@@ -140,7 +140,7 @@ Route::prefix('service')->group(function () {
     Route::controller(ServiceCategoryController::class)->group(function () {
         Route::prefix('category')->group(function () {
             Route::get('all', 'index');
-            Route::get('images', 'categoryFiles');
+            Route::get('images/{serviceCategory}', 'categoryFiles');
             Route::get('single/{serviceCategory}', 'show');
             Route::get('{serviceCategory}', 'getServices');
             Route::middleware('auth:api')->group(function () {

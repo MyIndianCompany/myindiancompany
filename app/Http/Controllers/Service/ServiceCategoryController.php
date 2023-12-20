@@ -181,9 +181,36 @@ class ServiceCategoryController extends Controller
         return ServiceCategoryResource::collection($services);
     }
 
-    public function categoryFiles()
+//    public function categoryFiles()
+//    {
+//        $obj = new ManageServicesService();
+//        return $obj->retrieveCategoryFiles();
+//    }
+
+    public function categoryFiles(ServiceCategory $serviceCategory)
     {
-        $obj = new ManageServicesService();
-        return $obj->retrieveCategoryFiles();
+        $query = DB::table('services')
+            ->join('service_service_category', 'services.id', '=', 'service_service_category.service_id')
+            ->join('service_categories', 'service_service_category.service_category_id', '=', 'service_categories.id')
+            ->join('service_files', 'services.id', '=', 'service_files.service_id')
+            ->select(
+                'service_categories.id as service_category_id',
+                'service_categories.name as service_category_name',
+                'services.id as service_id',
+                'services.name as service_name',
+                'services.service_code as service_code',
+                'services.description as service_description',
+                'services.price as service_price',
+                'service_files.original_file_name as original_file_name',
+                'service_files.file as file',
+                'service_files.mime_type as mime_type'
+            )
+            ->where('service_categories.id', $serviceCategory->id)
+            ->orderBy('services.created_at', 'desc')
+            ->get();
+
+        return $query;
     }
+
+
 }
