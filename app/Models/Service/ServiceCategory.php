@@ -47,6 +47,7 @@ class ServiceCategory extends Model
         'description',
         'slug',
         'remark',
+        'type',
         'status'
     ];
 

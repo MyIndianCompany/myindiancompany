@@ -21,12 +21,24 @@ class ServiceCategoryController extends Controller
     public function index()
     {
         $query = ServiceCategory::query()
+            ->where('type', '=', 'available')
+            ->select(['service_category_id', 'name', 'description', 'slug', 'remark'])
             ->with('files')
             ->orderBy('name')
             ->get();
         return ServiceCategoryResource::collection($query);
     }
 
+    public function getUpcomingServices()
+    {
+        $query = ServiceCategory::query()
+            ->where('type', '=', 'upcoming services')
+            ->select(['service_category_id', 'name', 'description', 'slug', 'remark'])
+            ->with('files')
+            ->orderBy('name')
+            ->get();
+        return ServiceCategoryResource::collection($query);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -40,6 +52,7 @@ class ServiceCategoryController extends Controller
                 'name'                => $request->input('name'),
                 'description'         => $request->input('description'),
                 'slug'                => $request->input('slug'),
+                'type'                => $request->input('type'),
                 'remark'              => $request->input('remark')
             ]);
             if($files) {
@@ -103,6 +116,7 @@ class ServiceCategoryController extends Controller
                 'name'                => $request->has('name') ? $request->input('name') : $serviceCategory->name,
                 'description'         => $request->has('description') ? $request->input('description') : $serviceCategory->description,
                 'slug'                => $request->has('slug') ? $request->input('slug') : $serviceCategory->slug,
+                'type'                => $request->has('type') ? $request->input('type') : $serviceCategory->type,
                 'remark'              => $request->has('remark') ? $request->input('remark') : $serviceCategory->remark,
             ]);
 
@@ -206,6 +220,9 @@ class ServiceCategoryController extends Controller
                 'service_files.mime_type as mime_type'
             )
             ->where('service_categories.id', $serviceCategory->id)
+            ->whereNull('service_categories.deleted_at')
+            ->whereNull('services.deleted_at')
+            ->whereNull('service_files.deleted_at')
             ->orderBy('services.created_at', 'desc')
             ->get();
 
