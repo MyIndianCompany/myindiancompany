@@ -22,7 +22,6 @@ class ServiceCategoryController extends Controller
     {
         $query = ServiceCategory::query()
             ->where('type', '=', 'available')
-            ->select(['service_category_id', 'name', 'description', 'slug', 'remark'])
             ->with('files')
             ->orderBy('name')
             ->get();
@@ -33,7 +32,6 @@ class ServiceCategoryController extends Controller
     {
         $query = ServiceCategory::query()
             ->where('type', '=', 'upcoming services')
-            ->select(['service_category_id', 'name', 'description', 'slug', 'remark'])
             ->with('files')
             ->orderBy('name')
             ->get();
