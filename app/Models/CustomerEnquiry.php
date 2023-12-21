@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Service\Service;
+use App\Models\Service\ServiceVariant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,6 +19,7 @@ class CustomerEnquiry extends Model
      */
     protected $fillable = [
         'service',
+        'service_variant',
         'name',
         'phone',
         'email',
@@ -38,5 +40,10 @@ class CustomerEnquiry extends Model
     public function service()
     {
         return $this->belongsTo(Service::class, 'service');
+    }
+
+    public function serviceVariant()
+    {
+        return $this->belongsTo(ServiceVariant::class, 'service_variant');
     }
 }

@@ -25,7 +25,7 @@ class CustomerEnquiryRequest extends FormRequest
             'name' => 'required|string|max:255',
             'phone' => ['required','numeric', 'regex:/^[0-9]{10}$/'],
             'email' => 'email',
-            'service' => 'required|exists:services,id',
+            'service_variant' => 'required|exists:service_variants,id',
             'message' => 'string|max:65535'
         ];
     }

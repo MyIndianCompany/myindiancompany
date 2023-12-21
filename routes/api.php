@@ -126,7 +126,8 @@ Route::prefix('service')->group(function () {
     Route::controller(ServiceController::class)->group(function () {
         Route::get('all', 'index');
         Route::get('images', 'serviceFiles');
-        Route::get('{service}', 'show');
+        Route::get('single/{service}', 'show');
+        Route::get('{service}', 'getServiceVariants');
         Route::middleware('auth:api')->group(function () {
             Route::post('add', 'create');
             Route::post('bulk/import', 'import');
