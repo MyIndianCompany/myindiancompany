@@ -2,6 +2,7 @@
 
 namespace App\Models\Service;
 
+use App\Models\CustomerEnquiry;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,5 +70,10 @@ class ServiceVariant extends Model
     public function service()
     {
         return $this->belongsTo(ServiceVariant::class);
+    }
+
+    public function CustomerEnquiries()
+    {
+        return $this->hasMany(CustomerEnquiry::class, 'service_variant');
     }
 }

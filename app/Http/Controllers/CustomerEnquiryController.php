@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Customer\CustomerEnquiryRequest;
 use App\Http\Resources\CustomerEnquiryResource;
 use App\Models\CustomerEnquiry;
+use App\Models\Service\Service;
+use App\Models\Service\ServiceVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,13 +18,14 @@ class CustomerEnquiryController extends Controller
     public function index()
     {
         $query = CustomerEnquiry::join('services', 'customer_enquiries.service', '=', 'services.id')
+            ->join('service_variants', 'customer_enquiries.service_variant', '=', 'service_variants.id')
             ->select(
                 'customer_enquiries.name as name',
                 'customer_enquiries.phone as phone',
                 'customer_enquiries.email as email',
                 'customer_enquiries.message as message',
-                'services.id as service_id',
                 'services.name as service_name',
+                'service_variants.name as service_variant_name',
             )
             ->orderBy('customer_enquiries.created_at', 'desc')
             ->get();
@@ -36,8 +39,17 @@ class CustomerEnquiryController extends Controller
     public function create(CustomerEnquiryRequest $request)
     {
         try {
+            $serviceVariantId = $request->input('service_variant');
+            $service = ServiceVariant::findOrFail($serviceVariantId)->service_id;
             DB::beginTransaction();
-            CustomerEnquiry::create($request->validated());
+            CustomerEnquiry::create([
+                'service' => $service,
+                'service_variant' => $request->input('service_variant'),
+                'name' => $request->input('name'),
+                'phone' => $request->input('phone'),
+                'email' => $request->input('email'),
+                'message' => $request->input('message')
+            ]);
             DB::commit();
             return response()->json([
                 'message' => 'Task completed.'
@@ -51,6 +63,7 @@ class CustomerEnquiryController extends Controller
             ], 401);
         }
     }
+
 
     /**
      * Store a newly created resource in storage.

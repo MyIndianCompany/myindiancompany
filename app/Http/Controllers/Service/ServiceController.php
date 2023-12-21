@@ -199,4 +199,10 @@ class ServiceController extends Controller
         $obj = new ManageServicesService();
         return $obj->retrieveServiceFiles();
     }
+
+    public function getServiceVariants(Service $service)
+    {
+        $serviceVariants = $service->variants()->get();
+        return ServiceResource::collection($serviceVariants);
+    }
 }

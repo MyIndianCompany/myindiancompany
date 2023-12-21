@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('customer_enquiries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('service');
+            $table->unsignedBigInteger('service')->nullable();
+            $table->unsignedBigInteger('service_variant')->nullable();
             $table->string('name');
             $table->string('phone');
-            $table->string('email');
-            $table->longText('message');
+            $table->string('email')->nullable();
+            $table->longText('message')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
+
             $table->foreign('service')->references('id')->on('services');
+            $table->foreign('service_variant')->references('id')->on('service_variants');
         });
     }
 
