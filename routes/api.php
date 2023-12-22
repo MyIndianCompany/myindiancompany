@@ -14,6 +14,7 @@ use App\Http\Controllers\Service\ServiceTagController;
 use App\Http\Controllers\Service\ServiceVariantController;
 use App\Http\Controllers\CustomerEnquiryController;
 use App\Http\Controllers\Agent\Financial\AgentBankAccountController;
+use App\Http\Controllers\CMS\ContactUsController;
 
 
 /*
@@ -186,6 +187,12 @@ Route::controller(CustomerEnquiryController::class)->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('enquiries', 'index');
         Route::post('enquiry', 'create');
+    });
+});
+
+Route::controller(ContactUsController::class)->group(function () {
+    Route::prefix('cms')->group(function () {
+        Route::post('contact-us', 'store');
     });
 });
 
