@@ -19,7 +19,9 @@ class ServiceCategoryFile extends Model
         'category_id',
         'original_file_name',
         'file',
-        'mime_type'
+        'mime_type',
+        'type',
+        'status'
     ];
 
     /**
@@ -30,7 +32,9 @@ class ServiceCategoryFile extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'type',
+        'status'
     ];
 
 
