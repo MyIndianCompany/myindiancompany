@@ -40,11 +40,11 @@ class CustomerEnquiryController extends Controller
     {
         try {
             $serviceVariantId = $request->input('service_variant');
-            $service = ServiceVariant::findOrFail($serviceVariantId)->service_id;
+            $service = $serviceVariantId !== null ? ServiceVariant::find($serviceVariantId)->service_id : null;
             DB::beginTransaction();
             CustomerEnquiry::create([
-                'service' => $service,
-                'service_variant' => $request->input('service_variant'),
+                'service' => $request->has('service') ? $request->input('service') : $service,
+                'service_variant' => $serviceVariantId,
                 'name' => $request->input('name'),
                 'phone' => $request->input('phone'),
                 'email' => $request->input('email'),
