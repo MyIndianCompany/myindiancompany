@@ -7,32 +7,37 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Service\ServiceCategoryResource;
 use App\Models\Service\ServiceCategory;
 use App\Models\Service\ServiceCategoryFile;
-use App\Services\ManageServices\ManageServicesService;
-use App\Utility\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class ServiceCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         $query = ServiceCategory::query()
             ->where('type', '=', 'available')
-            ->with('files')
+            ->with(['files' => function ($query) {
+                $query->where('type', '=', Constants::THUMBNAIL)->where('status', '=', Constants::STATUS_ACTIVE);
+            }])
             ->orderBy('name')
             ->get();
         return ServiceCategoryResource::collection($query);
     }
 
-    public function getUpcomingServices()
+    public function getUpcomingServices(): AnonymousResourceCollection
     {
         $query = ServiceCategory::query()
             ->where('type', '=', 'upcoming services')
-            ->with('files')
+            ->with(['files' => function ($query) {
+                $query->where('type', '=', Constants::THUMBNAIL)->where('status', '=', Constants::STATUS_ACTIVE);
+            }])
             ->orderBy('name')
             ->get();
         return ServiceCategoryResource::collection($query);
@@ -40,7 +45,7 @@ class ServiceCategoryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         try {
             $files =  $request->file('files');
@@ -63,6 +68,8 @@ class ServiceCategoryController extends Controller
                         'original_file_name' => $originalFileName,
                         'file'               => $fileUrl,
                         'mime_type'          => $file->getMimeType(),
+                        'type'               => Constants::THUMBNAIL,
+                        'status'             => Constants::STATUS_ACTIVE
                     ];
                     ServiceCategoryFile::create($serviceCategoryFile);
                 }
@@ -80,7 +87,6 @@ class ServiceCategoryController extends Controller
             ], 401);
         }
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -101,7 +107,7 @@ class ServiceCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ServiceCategory $serviceCategory)
+    public function update(Request $request, ServiceCategory $serviceCategory): JsonResponse
     {
         try {
             $uploadedFiles = $request->file('files');
@@ -118,7 +124,6 @@ class ServiceCategoryController extends Controller
                 'remark'              => $request->has('remark') ? $request->input('remark') : $serviceCategory->remark,
             ]);
 
-            // Handle files to delete
             if ($filesToDelete) {
                 foreach ($filesToDelete as $fileId) {
                     $fileToDelete = ServiceCategoryFile::where('category_id', $serviceCategory->id)
@@ -132,17 +137,18 @@ class ServiceCategoryController extends Controller
                 }
             }
 
-            // Handle uploaded files
             if($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
                     $originalFileName = $file->getClientOriginalName();
                     $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
                     $fileUrl = Storage::disk('s3')->url($fileName);
                     $serviceCategoryFile = [
-                        'category_id' => $serviceCategory->id,
+                        'category_id'        => $serviceCategory->id,
                         'original_file_name' => $originalFileName,
-                        'file' => $fileUrl,
-                        'mime_type' => $file->getMimeType(),
+                        'file'               => $fileUrl,
+                        'mime_type'          => $file->getMimeType(),
+                        'type'               => Constants::THUMBNAIL,
+                        'status'             => Constants::STATUS_ACTIVE
                     ];
                     ServiceCategoryFile::create($serviceCategoryFile);
                 }
@@ -162,11 +168,10 @@ class ServiceCategoryController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ServiceCategory $serviceCategory)
+    public function destroy(ServiceCategory $serviceCategory): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -185,7 +190,7 @@ class ServiceCategoryController extends Controller
         }
     }
 
-    public function getServices(ServiceCategory $serviceCategory)
+    public function getServices(ServiceCategory $serviceCategory): AnonymousResourceCollection
     {
         $services = $serviceCategory->services()->with(['files', 'categories' => function ($query) {
             $query->select('name');
@@ -193,15 +198,9 @@ class ServiceCategoryController extends Controller
         return ServiceCategoryResource::collection($services);
     }
 
-//    public function categoryFiles()
-//    {
-//        $obj = new ManageServicesService();
-//        return $obj->retrieveCategoryFiles();
-//    }
-
-    public function categoryFiles(ServiceCategory $serviceCategory)
+    public function categoryFiles(ServiceCategory $serviceCategory): Collection
     {
-        $query = DB::table('services')
+        return DB::table('services')
             ->join('service_service_category', 'services.id', '=', 'service_service_category.service_id')
             ->join('service_categories', 'service_service_category.service_category_id', '=', 'service_categories.id')
             ->join('service_files', 'services.id', '=', 'service_files.service_id')
@@ -223,9 +222,51 @@ class ServiceCategoryController extends Controller
             ->whereNull('service_files.deleted_at')
             ->orderBy('services.created_at', 'desc')
             ->get();
-
-        return $query;
     }
 
+    public function slider(Request $request): JsonResponse
+    {
+        try {
+            $serviceCategoryId = $request->input('service_category_id');
+            $serviceCategory = $serviceCategoryId !== null ? ServiceCategory::find($serviceCategoryId)->id : null;
+            $files = $request->file('files');
+            DB::beginTransaction();
+            if ($files) {
+                foreach ($files as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_SLIDER_FILE_PATH, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $serviceCategoryFile = [
+                        'category_id'        => $serviceCategory,
+                        'original_file_name' => $originalFileName,
+                        'file'               => $fileUrl,
+                        'mime_type'          => $file->getMimeType(),
+                        'type'               => Constants::SLIDER,
+                        'status'             => Constants::STATUS_ACTIVE
+                    ];
+                    ServiceCategoryFile::create($serviceCategoryFile);
+                }
+            }
+            DB::commit();
+            return response()->json([
+                'message' => 'Task completed.'
+            ], 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return response()->json([
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
+        }
+    }
 
+    public function getSlider(ServiceCategory $serviceCategory): AnonymousResourceCollection
+    {
+        $query = $serviceCategory->files()
+            ->where('type', Constants::SLIDER)
+            ->where('status', Constants::STATUS_ACTIVE)
+            ->get();
+        return ServiceCategoryResource::collection($query);
+    }
 }

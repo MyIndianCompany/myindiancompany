@@ -11,8 +11,16 @@ class Constants
     //Service Category File Path
     const SERVICE_FILE_PATH = "/service";
     const SERVICE_CATEGORY_FILE_PATH = "/service_category";
+    const SERVICE_CATEGORY_SLIDER_FILE_PATH = "/service_category/slider";
 
     //Agent Document
-
     const AGENT_PAN_CARD = "/agent/pan_card";
+
+    //Category Files Uploading Type
+    const THUMBNAIL = "thumbnail";
+    const SLIDER = "slider";
+
+    //Status
+    const STATUS_ACTIVE = "active";
+    const STATUS_INACTIVE = "inactive";
 }
