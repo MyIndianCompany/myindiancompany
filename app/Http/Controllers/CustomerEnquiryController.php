@@ -17,8 +17,8 @@ class CustomerEnquiryController extends Controller
      */
     public function index()
     {
-        $query = CustomerEnquiry::join('services', 'customer_enquiries.service', '=', 'services.id')
-            ->join('service_variants', 'customer_enquiries.service_variant', '=', 'service_variants.id')
+        $query = CustomerEnquiry::leftJoin('services', 'customer_enquiries.service', '=', 'services.id')
+            ->leftJoin('service_variants', 'customer_enquiries.service_variant', '=', 'service_variants.id')
             ->select(
                 'customer_enquiries.name as name',
                 'customer_enquiries.phone as phone',
@@ -30,7 +30,6 @@ class CustomerEnquiryController extends Controller
             )
             ->orderBy('customer_enquiries.created_at', 'desc')
             ->get();
-
         return CustomerEnquiryResource::collection($query);
     }
 
