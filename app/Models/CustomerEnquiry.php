@@ -23,6 +23,7 @@ class CustomerEnquiry extends Model
         'name',
         'phone',
         'email',
+        'address',
         'message'
     ];
 
