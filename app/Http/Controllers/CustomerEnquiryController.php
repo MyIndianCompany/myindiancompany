@@ -23,6 +23,7 @@ class CustomerEnquiryController extends Controller
                 'customer_enquiries.name as name',
                 'customer_enquiries.phone as phone',
                 'customer_enquiries.email as email',
+                'customer_enquiries.address as address',
                 'customer_enquiries.message as message',
                 'services.name as service_name',
                 'service_variants.name as service_variant_name',
@@ -48,6 +49,7 @@ class CustomerEnquiryController extends Controller
                 'name' => $request->input('name'),
                 'phone' => $request->input('phone'),
                 'email' => $request->input('email'),
+                'address' => $request->input('address'),
                 'message' => $request->input('message')
             ]);
             DB::commit();
