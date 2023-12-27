@@ -15,6 +15,7 @@ class Constants
 
     //Agent Document
     const AGENT_PAN_CARD = "/agent/pan_card";
+    const AGENT_PROFILE_PICTURE = "/agent/profile_picture";
 
     //Category Files Uploading Type
     const THUMBNAIL = "thumbnail";
