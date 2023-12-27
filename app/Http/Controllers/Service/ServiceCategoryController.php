@@ -21,7 +21,7 @@ class ServiceCategoryController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $serviceCategory = ServiceCategory::query()->orderBy('name')->get();
+        $serviceCategory = ServiceCategory::select('id', 'name')->orderBy('name')->get();
         return  ServiceCategoryResource::collection($serviceCategory);
     }
 
