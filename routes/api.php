@@ -143,7 +143,8 @@ Route::prefix('service')->group(function () {
     Route::controller(ServiceCategoryController::class)->group(function () {
         Route::prefix('category')->group(function () {
             Route::get('all', 'index');
-            Route::get('latest', 'getUpcomingServices');
+            Route::get('available', 'getAvailableServices');
+            Route::get('upcoming', 'getUpcomingServices');
             Route::get('images/{serviceCategory}', 'categoryFiles');
             Route::get('single/{serviceCategory}', 'show');
             Route::get('slider/{serviceCategory}', 'getSlider');
