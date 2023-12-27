@@ -21,6 +21,12 @@ class ServiceCategoryController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        $serviceCategory = ServiceCategory::query()->orderBy('name')->get();
+        return  ServiceCategoryResource::collection($serviceCategory);
+    }
+
+    public function getAvailableServices(): AnonymousResourceCollection
+    {
         $query = ServiceCategory::query()
             ->where('type', '=', 'available')
             ->with(['files' => function ($query) {
@@ -86,14 +92,6 @@ class ServiceCategoryController extends Controller
                 'error' => $exception->getMessage()
             ], 401);
         }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
