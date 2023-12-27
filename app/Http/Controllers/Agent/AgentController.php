@@ -123,6 +123,34 @@ class AgentController extends Controller
         }
     }
 
+    public function profilePictureUpload(Request $request, Agent $agent)
+    {
+        try {
+            $uploadedFiles = $request->file('profile_picture');
+            DB::beginTransaction();
+            if ($uploadedFiles) {
+                foreach ($uploadedFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::AGENT_PROFILE_PICTURE, $originalFileName, 's3');
+                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $agent->photo = $fileUrl;
+                    $agent->save();
+                }
+            }
+            DB::commit();
+            return response()->json([
+                'message' => 'Task completed.'
+            ], 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return response()->json([
+                'message' => 'Oops! Something went wrong. Please try again later.',
+                'error' => $exception->getMessage()
+            ], 401);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
