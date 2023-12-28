@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Service;
 
 use App\Common\Constants\Constants;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ServiceCategory\ServiceCategoryRequest;
 use App\Http\Resources\Service\ServiceCategoryResource;
 use App\Models\Service\ServiceCategory;
 use App\Models\Service\ServiceCategoryFile;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ServiceCategoryController extends Controller
 {
@@ -51,16 +53,29 @@ class ServiceCategoryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): JsonResponse
+    public function create(ServiceCategoryRequest $request): JsonResponse
     {
         try {
             $files =  $request->file('files');
+
+            $originalName = $request->input('name');
+            $slugBase = Str::slug($originalName, '-', 'hi', ['&' => 'and']);
+            $slug = $slugBase;
+            $slugExists = ServiceCategory::where('slug', $slug)->exists();
+            $counter = 1;
+
+            while ($slugExists) {
+                $slug = $slugBase . '-' . $counter;
+                $slugExists = ServiceCategory::where('slug', $slug)->exists();
+                $counter++;
+            }
+
             DB::beginTransaction();
             $serviceCategory = ServiceCategory::create([
                 'service_category_id' => $request->input('service_category_id'),
-                'name'                => $request->input('name'),
+                'name'                => $originalName,
                 'description'         => $request->input('description'),
-                'slug'                => $request->input('slug'),
+                'slug'                => $slug,
                 'type'                => $request->input('type'),
                 'remark'              => $request->input('remark')
             ]);
@@ -111,13 +126,26 @@ class ServiceCategoryController extends Controller
             $uploadedFiles = $request->file('files');
             $filesToDelete = $request->input('files_to_delete');
 
+            $originalName = $request->has('name') ? $request->input('name') : $serviceCategory->name;
+            $existingSlug = $serviceCategory->slug ?? null;
+            $slugBase = Str::slug($originalName, '-', 'hi', ['@' => 'at', '&' => 'and']);
+            $slug = $slugBase;
+            $slugExists = ServiceCategory::where('slug', $slug)->where('slug', '!=', $existingSlug)->exists();
+            $counter = 1;
+
+            while ($slugExists) {
+                $slug = $slugBase . '-' . $counter;
+                $slugExists = ServiceCategory::where('slug', $slug)->where('slug', '!=', $existingSlug)->exists();
+                $counter++;
+            }
+
             DB::beginTransaction();
 
             $serviceCategory->update([
                 'service_category_id' => $request->has('service_category_id') ? $request->input('service_category_id') : $serviceCategory->service_category_id,
-                'name'                => $request->has('name') ? $request->input('name') : $serviceCategory->name,
+                'name'                => $originalName,
                 'description'         => $request->has('description') ? $request->input('description') : $serviceCategory->description,
-                'slug'                => $request->has('slug') ? $request->input('slug') : $serviceCategory->slug,
+                'slug'                => $slug,
                 'type'                => $request->has('type') ? $request->input('type') : $serviceCategory->type,
                 'remark'              => $request->has('remark') ? $request->input('remark') : $serviceCategory->remark,
             ]);
@@ -188,11 +216,14 @@ class ServiceCategoryController extends Controller
         }
     }
 
-    public function getServices(ServiceCategory $serviceCategory): AnonymousResourceCollection
+    public function getServices($slug): AnonymousResourceCollection
     {
-        $services = $serviceCategory->services()->with(['files', 'categories' => function ($query) {
-            $query->select('name');
-        }])->get();
+        $serviceCategory = ServiceCategory::where('slug', $slug)->firstOrFail();
+        $services = $serviceCategory->services()
+            ->with(['files', 'categories' => function ($query) {
+                $query->select('name');
+            }])
+            ->get();
         return ServiceCategoryResource::collection($services);
     }
 

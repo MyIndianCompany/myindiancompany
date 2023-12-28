@@ -110,7 +110,8 @@ class ServiceController extends Controller
                 'slug'         => $request->has('slug') ? $request->input('slug') : $service->slug,
                 'remark'       => $request->has('remark') ? $request->input('remark') : $service->remark
             ]);
-
+            $categories = $request->input('category_id');
+            $service->categories()->attach($categories);
             if ($filesToDelete) {
                 foreach ($filesToDelete as $fileId) {
                     $fileToDelete = ServiceFile::where('service_id', $service->id)
