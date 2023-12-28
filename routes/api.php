@@ -148,7 +148,7 @@ Route::prefix('service')->group(function () {
             Route::get('images/{serviceCategory}', 'categoryFiles');
             Route::get('single/{serviceCategory}', 'show');
             Route::get('slider/{serviceCategory}', 'getSlider');
-            Route::get('{serviceCategory}', 'getServices');
+            Route::get('{slug}', 'getServices');
             Route::middleware('auth:api')->group(function () {
                 Route::post('add', 'create');
                 Route::post('slider', 'slider');
