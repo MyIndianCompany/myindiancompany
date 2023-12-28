@@ -290,8 +290,9 @@ class ServiceCategoryController extends Controller
         }
     }
 
-    public function getSlider(ServiceCategory $serviceCategory): AnonymousResourceCollection
+    public function getSlider($slug): AnonymousResourceCollection
     {
+        $serviceCategory = ServiceCategory::where('slug', $slug)->firstOrFail();
         $query = $serviceCategory->files()
             ->where('type', Constants::SLIDER)
             ->where('status', Constants::STATUS_ACTIVE)
