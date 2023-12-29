@@ -37,12 +37,12 @@ class AgentController extends Controller
     public function show(Agent $agent)
     {
         $getAgent = Agent::where('agents.id', $agent->id)
-            ->join('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
-            ->join('contacts', 'agent_contact.contact_id', '=', 'contacts.id')
-            ->join('cities', 'contacts.city_id', '=', 'cities.id')
-            ->join('districts', 'contacts.district_id', '=', 'districts.id')
-            ->join('states', 'contacts.state_id', '=', 'states.id')
-            ->join('service_categories', 'agents.service_category_id', '=', 'service_categories.id')
+            ->leftJoin('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
+            ->leftJoin('contacts', 'agent_contact.contact_id', '=', 'contacts.id')
+            ->leftJoin('cities', 'contacts.city_id', '=', 'cities.id')
+            ->leftJoin('districts', 'contacts.district_id', '=', 'districts.id')
+            ->leftJoin('states', 'contacts.state_id', '=', 'states.id')
+            ->leftJoin('service_categories', 'agents.service_category_id', '=', 'service_categories.id')
             ->select(
                 'agents.name as name',
                 'service_categories.name as job_title',
@@ -55,7 +55,8 @@ class AgentController extends Controller
                 'districts.name as district',
                 'states.name as state',
                 'contacts.zip_code as zip_code',
-                'agents.photo as photo'
+                'agents.pan_card_docs as pan_card_docs',
+                'agents.photo as profile_picture'
             )
             ->first();
 
