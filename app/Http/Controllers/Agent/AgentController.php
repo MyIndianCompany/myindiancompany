@@ -109,9 +109,16 @@ class AgentController extends Controller
         }
     }
 
-    public function updateDocument(Request $request, Agent $agent)
+    public function updateDocument(Request $request)
     {
         try {
+            $user = auth()->user()->id;
+            $agent = Agent::where('user_id', $user)->first();
+
+            if (!$agent) {
+                throw new \Exception('Agent not found for the authenticated user.');
+            }
+
             $uploadedFiles = $request->file('pan_card_docs');
             DB::beginTransaction();
             if ($uploadedFiles) {
@@ -137,9 +144,16 @@ class AgentController extends Controller
         }
     }
 
-    public function profilePictureUpload(Request $request, Agent $agent)
+    public function profilePictureUpload(Request $request)
     {
         try {
+            $user = auth()->user()->id;
+            $agent = Agent::where('user_id', $user)->first();
+
+            if (!$agent) {
+                throw new \Exception('Agent not found for the authenticated user.');
+            }
+
             $uploadedFiles = $request->file('profile_picture');
             DB::beginTransaction();
             if ($uploadedFiles) {

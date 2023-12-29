@@ -43,9 +43,9 @@ Route::prefix('agent')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('logout', 'logout');
             Route::controller(AgentController::class)->group(function () {
-                Route::get('/info', 'show');
-                Route::post('document/{agent}', 'updateDocument');
-                Route::post('profile/{agent}', 'profilePictureUpload');
+                Route::get('info', 'show');
+                Route::post('document', 'updateDocument');
+                Route::post('profile', 'profilePictureUpload');
                 Route::patch('info', 'update');
             });
         });
