@@ -46,7 +46,7 @@ Route::prefix('agent')->group(function () {
                 Route::get('/info', 'show');
                 Route::post('document/{agent}', 'updateDocument');
                 Route::post('profile/{agent}', 'profilePictureUpload');
-                Route::patch('{agent}', 'update');
+                Route::patch('info', 'update');
             });
         });
     });
