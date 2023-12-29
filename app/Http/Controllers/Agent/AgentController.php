@@ -70,11 +70,23 @@ class AgentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AgentRequest $request, Agent $agent)
+    public function update(AgentRequest $request)
     {
         try {
+            $user = auth()->user()->id;
+            $agent = Agent::where('user_id', $user)->first();
+
+            if (!$agent) {
+                throw new \Exception('Agent not found for the authenticated user.');
+            }
+
             $city = City::with('district.state.country')
                   ->find($request->validated('city_id'));
+
+            if (!$city) {
+                throw new \Exception('City not found for the provided name.');
+            }
+
             DB::beginTransaction();
             $agent->update($request->validated());
             $agent->contacts()->update([
