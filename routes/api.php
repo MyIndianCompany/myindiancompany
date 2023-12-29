@@ -43,7 +43,7 @@ Route::prefix('agent')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('logout', 'logout');
             Route::controller(AgentController::class)->group(function () {
-                Route::get('{agent}', 'show');
+                Route::get('/info', 'show');
                 Route::post('document/{agent}', 'updateDocument');
                 Route::post('profile/{agent}', 'profilePictureUpload');
                 Route::patch('{agent}', 'update');

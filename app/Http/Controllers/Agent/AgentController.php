@@ -34,9 +34,10 @@ class AgentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Agent $agent)
+    public function show()
     {
-        $getAgent = Agent::where('agents.id', $agent->id)
+        $user = auth()->user()->id;
+        $getAgent = Agent::where('user_id', $user)
             ->leftJoin('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
             ->leftJoin('contacts', 'agent_contact.contact_id', '=', 'contacts.id')
             ->leftJoin('cities', 'contacts.city_id', '=', 'cities.id')
