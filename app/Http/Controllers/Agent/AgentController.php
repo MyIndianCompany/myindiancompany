@@ -123,19 +123,23 @@ class AgentController extends Controller
             if (!$uploadedFiles) {
                 throw new MicException('File not found!');
             }
+            $fileUrls = [];
             DB::beginTransaction();
             if ($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
                     $originalFileName = $file->getClientOriginalName();
                     $fileName = $file->storeAs(Constants::AGENT_PAN_CARD, $originalFileName, 's3');
                     $fileUrl = Storage::disk('s3')->url($fileName);
-                    $agent->pan_card_docs = $fileUrl;
-                    $agent->save();
+
+                    $fileUrls[]  = $fileUrl;
                 }
             }
+            $agent->pan_card_docs = $fileUrls;
+            $agent->save();
             DB::commit();
             return response()->json([
-                'message' => 'Task completed.'
+                'message' => 'Task completed.',
+                'files' => $fileUrls
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
