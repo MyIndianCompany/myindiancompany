@@ -120,6 +120,9 @@ class AgentController extends Controller
             }
 
             $uploadedFiles = $request->file('pan_card_docs');
+            if (!$uploadedFiles) {
+                throw new MicException('File not found!');
+            }
             DB::beginTransaction();
             if ($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
@@ -155,6 +158,11 @@ class AgentController extends Controller
             }
 
             $uploadedFiles = $request->file('profile_picture');
+
+            if (!$uploadedFiles) {
+                throw new MicException('File not found!');
+            }
+
             DB::beginTransaction();
             if ($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
