@@ -12,6 +12,7 @@ use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AgentController extends Controller
 {
@@ -117,6 +118,15 @@ class AgentController extends Controller
             if (!$agent) {
                 throw new \Exception('Agent not found for the authenticated user.');
             }
+            $validator = Validator::make($request->all(), [
+                'pan_card_docs' => 'required|file|mimes:jpg,jpeg,png,pdf|max:1024',
+            ]);
+            $validator->setCustomMessages([
+                'max' => 'The :attribute must not be greater than 1MB.'
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            }
             $uploadedFile = $request->file('pan_card_docs');
             if (!$uploadedFile) {
                 throw new MicException('File not found!');
@@ -135,7 +145,6 @@ class AgentController extends Controller
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
@@ -148,6 +157,15 @@ class AgentController extends Controller
             $agent = Agent::where('user_id', $user)->first();
             if (!$agent) {
                 throw new \Exception('Agent not found for the authenticated user.');
+            }
+            $validator = Validator::make($request->all(), [
+                'profile_picture' => 'required|file|mimes:jpg,jpeg,png|max:1024',
+            ]);
+            $validator->setCustomMessages([
+                'max' => 'The :attribute must not be greater than 1MB.'
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
             }
             $uploadedFile = $request->file('profile_picture');
             if (!$uploadedFile) {
@@ -167,7 +185,6 @@ class AgentController extends Controller
             DB::rollBack();
             report($exception);
             return response()->json([
-                'message' => 'Oops! Something went wrong. Please try again later.',
                 'error' => $exception->getMessage()
             ], 401);
         }
