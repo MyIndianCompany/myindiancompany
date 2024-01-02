@@ -114,32 +114,22 @@ class AgentController extends Controller
         try {
             $user = auth()->user()->id;
             $agent = Agent::where('user_id', $user)->first();
-
             if (!$agent) {
                 throw new \Exception('Agent not found for the authenticated user.');
             }
-
-            $uploadedFiles = $request->file('pan_card_docs');
-            if (!$uploadedFiles) {
+            $uploadedFile = $request->file('pan_card_docs');
+            if (!$uploadedFile) {
                 throw new MicException('File not found!');
             }
-            $fileUrls = [];
             DB::beginTransaction();
-            if ($uploadedFiles) {
-                foreach ($uploadedFiles as $file) {
-                    $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::AGENT_PAN_CARD, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
-
-                    $fileUrls[]  = $fileUrl;
-                }
-            }
-            $agent->pan_card_docs = $fileUrls;
+            $originalFileName = $uploadedFile->getClientOriginalName();
+            $fileName = $uploadedFile->storeAs(Constants::AGENT_PAN_CARD, $originalFileName, 's3');
+            $fileUrl = Storage::disk('s3')->url($fileName);
+            $agent->pan_card_docs = $fileUrl;
             $agent->save();
             DB::commit();
             return response()->json([
-                'message' => 'Task completed.',
-                'files' => $fileUrls
+                'message' => 'Task completed.'
             ], 201);
         } catch (\Exception $exception) {
             DB::rollBack();
@@ -156,27 +146,19 @@ class AgentController extends Controller
         try {
             $user = auth()->user()->id;
             $agent = Agent::where('user_id', $user)->first();
-
             if (!$agent) {
                 throw new \Exception('Agent not found for the authenticated user.');
             }
-
-            $uploadedFiles = $request->file('profile_picture');
-
-            if (!$uploadedFiles) {
+            $uploadedFile = $request->file('profile_picture');
+            if (!$uploadedFile) {
                 throw new MicException('File not found!');
             }
-
             DB::beginTransaction();
-            if ($uploadedFiles) {
-                foreach ($uploadedFiles as $file) {
-                    $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::AGENT_PROFILE_PICTURE, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
-                    $agent->photo = $fileUrl;
-                    $agent->save();
-                }
-            }
+            $originalFileName = $uploadedFile->getClientOriginalName();
+            $fileName = $uploadedFile->storeAs(Constants::AGENT_PROFILE_PICTURE, $originalFileName, 's3');
+            $fileUrl = Storage::disk('s3')->url($fileName);
+            $agent->photo = $fileUrl;
+            $agent->save();
             DB::commit();
             return response()->json([
                 'message' => 'Task completed.'
