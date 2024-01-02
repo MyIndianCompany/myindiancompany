@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CMS;
 
+use App\Exports\CMS\ContactUsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CMS\ContactUsRequest;
 use App\Models\CMS\ContactUs;
@@ -10,17 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class ContactUsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ContactUsRequest $request)
     {
         try {
@@ -45,27 +35,8 @@ class ContactUsController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ContactUs $contactUs)
+    public function export(ContactUs $contactUs)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ContactUs $contactUs)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ContactUs $contactUs)
-    {
-        //
+        return new ContactUsExport();
     }
 }

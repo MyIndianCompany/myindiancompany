@@ -197,6 +197,7 @@ Route::controller(CustomerEnquiryController::class)->group(function () {
 
 Route::controller(ContactUsController::class)->group(function () {
     Route::prefix('cms')->group(function () {
+        Route::get('export', 'export');
         Route::post('contact-us', 'store');
     });
 });
