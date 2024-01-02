@@ -38,7 +38,7 @@ class CustomerEnquiry extends Model
         'updated_at'
     ];
 
-    public function service()
+    public function services()
     {
         return $this->belongsTo(Service::class, 'service');
     }
