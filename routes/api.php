@@ -190,12 +190,14 @@ Route::prefix('service')->group(function () {
 Route::controller(CustomerEnquiryController::class)->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('enquiries', 'index');
+        Route::get('export', 'export');
         Route::post('enquiry', 'create');
     });
 });
 
 Route::controller(ContactUsController::class)->group(function () {
     Route::prefix('cms')->group(function () {
+        Route::get('export', 'export');
         Route::post('contact-us', 'store');
     });
 });

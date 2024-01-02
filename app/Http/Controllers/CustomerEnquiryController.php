@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\Customer\CustomerEnquiryExport;
 use App\Http\Requests\Customer\CustomerEnquiryRequest;
 use App\Http\Resources\CustomerEnquiryResource;
 use App\Models\CustomerEnquiry;
@@ -9,12 +10,10 @@ use App\Models\Service\Service;
 use App\Models\Service\ServiceVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerEnquiryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $query = CustomerEnquiry::leftJoin('services', 'customer_enquiries.service', '=', 'services.id')
@@ -33,9 +32,6 @@ class CustomerEnquiryController extends Controller
         return CustomerEnquiryResource::collection($query);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(CustomerEnquiryRequest $request)
     {
         try {
@@ -65,44 +61,8 @@ class CustomerEnquiryController extends Controller
         }
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function export()
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(CustomerEnquiry $customerEnquiry)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CustomerEnquiry $customerEnquiry)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CustomerEnquiry $customerEnquiry)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CustomerEnquiry $customerEnquiry)
-    {
-        //
+        return new CustomerEnquiryExport();
     }
 }
