@@ -118,7 +118,7 @@ Route::controller(CityController::class)->group(function () {
     });
 });
 
-Route::middleware(['cors'])->group(function () {
+Route::middleware('cors')->group(function () {
 /*
 * Manage Service
 */
