@@ -118,7 +118,6 @@ Route::controller(CityController::class)->group(function () {
     });
 });
 
-//Route::middleware('cors')->group(function () {
 /*
 * Manage Service
 */
@@ -187,7 +186,6 @@ Route::prefix('service')->group(function () {
         });
     });
 });
-//});
 
 Route::controller(CustomerEnquiryController::class)->group(function () {
     Route::prefix('customer')->group(function () {
