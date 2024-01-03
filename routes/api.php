@@ -202,3 +202,8 @@ Route::controller(ContactUsController::class)->group(function () {
     });
 });
 
+Route::controller(ContactUsController::class)->group(function () {
+    Route::prefix('cms')->group(function () {
+        Route::get('exporting', 'export');
+    });
+});
