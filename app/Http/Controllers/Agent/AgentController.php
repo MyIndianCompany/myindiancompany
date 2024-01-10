@@ -38,7 +38,7 @@ class AgentController extends Controller
     public function show()
     {
         $user = auth()->user()->id;
-        return Agent::where('user_id', $user)
+        $getAgent =  Agent::where('user_id', $user)
             ->leftJoin('agent_contact', 'agents.id', '=', 'agent_contact.agent_id')
             ->leftJoin('contacts', 'agent_contact.contact_id', '=', 'contacts.id')
             ->leftJoin('cities', 'contacts.city_id', '=', 'cities.id')
@@ -61,11 +61,10 @@ class AgentController extends Controller
                 'agents.photo as profile_picture'
             )
             ->first();
-
-//        if (!$getAgent) {
-//            throw new MicException('Agent not found');
-//        }
-//        return new AgentResource($getAgent);
+        if (!$getAgent) {
+            throw new MicException('Agent not found');
+        }
+        return $getAgent;
     }
 
     /**
