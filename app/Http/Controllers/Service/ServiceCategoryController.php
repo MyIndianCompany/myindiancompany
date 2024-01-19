@@ -168,6 +168,7 @@ class ServiceCategoryController extends Controller
                     $originalFileName = $file->getClientOriginalName();
                     $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 'public');
                     $fileUrl = Storage::disk('public')->url($fileName);
+                    $fileUrl = urldecode($fileUrl);
                     $serviceCategoryFile = [
                         'category_id'        => $serviceCategory->id,
                         'original_file_name' => $originalFileName,
