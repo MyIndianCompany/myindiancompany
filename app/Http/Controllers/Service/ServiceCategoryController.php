@@ -82,8 +82,8 @@ class ServiceCategoryController extends Controller
             if($files) {
                 foreach ($files as $file) {
                     $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
                     $serviceCategoryFile = [
                         'category_id'        => $serviceCategory->id,
                         'original_file_name' => $originalFileName,
@@ -166,8 +166,8 @@ class ServiceCategoryController extends Controller
             if($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
                     $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
                     $serviceCategoryFile = [
                         'category_id'        => $serviceCategory->id,
                         'original_file_name' => $originalFileName,
@@ -263,8 +263,8 @@ class ServiceCategoryController extends Controller
             if ($files) {
                 foreach ($files as $file) {
                     $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_SLIDER_FILE_PATH, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $fileName = $file->storeAs(Constants::SERVICE_CATEGORY_SLIDER_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
                     $serviceCategoryFile = [
                         'category_id'        => $serviceCategory,
                         'original_file_name' => $originalFileName,
