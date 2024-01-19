@@ -50,8 +50,8 @@ class ServiceController extends Controller
             if($files) {
                 foreach ($files as $file) {
                     $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
                     $serviceFile = [
                         'service_id'         => $service->id,
                         'original_file_name' => $originalFileName,
@@ -128,8 +128,8 @@ class ServiceController extends Controller
             if($uploadedFiles) {
                 foreach ($uploadedFiles as $file) {
                     $originalFileName = $file->getClientOriginalName();
-                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 's3');
-                    $fileUrl = Storage::disk('s3')->url($fileName);
+                    $fileName = $file->storeAs(Constants::SERVICE_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
                     $serviceFile = [
                         'service_id' => $service->id,
                         'original_file_name' => $originalFileName,
