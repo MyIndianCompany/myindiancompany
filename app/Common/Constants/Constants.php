@@ -10,6 +10,7 @@ class Constants
 
     //Service Category File Path
     const SERVICE_FILE_PATH = "/service";
+    const SERVICE_DETAIL_FILE_PATH = "/service/details";
     const SERVICE_CATEGORY_FILE_PATH = "/service_category";
     const SERVICE_CATEGORY_SLIDER_FILE_PATH = "/service_category/slider";
 

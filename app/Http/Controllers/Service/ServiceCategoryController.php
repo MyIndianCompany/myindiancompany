@@ -220,7 +220,7 @@ class ServiceCategoryController extends Controller
     {
         $serviceCategory = ServiceCategory::where('slug', $slug)->firstOrFail();
         $services = $serviceCategory->services()
-            ->with(['files','variants', 'categories' => function ($query) {
+            ->with(['files','variants','detailFiles', 'categories' => function ($query) {
                 $query->select('name');
             }])
             ->get();

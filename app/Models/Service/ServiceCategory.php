@@ -63,7 +63,8 @@ class ServiceCategory extends Model
         'updated_by',
         'deleted_at',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'pivot'
     ];
 
     public function services()
