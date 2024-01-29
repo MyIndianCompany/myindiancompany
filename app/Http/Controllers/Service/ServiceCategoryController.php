@@ -27,6 +27,17 @@ class ServiceCategoryController extends Controller
         return  ServiceCategoryResource::collection($serviceCategory);
     }
 
+    public function getAllServiceCategories(): AnonymousResourceCollection
+    {
+        $query = ServiceCategory::query()
+            ->with(['files' => function ($query) {
+                $query->where('type', '=', Constants::THUMBNAIL)->where('status', '=', Constants::STATUS_ACTIVE);
+            }])
+            ->orderBy('name')
+            ->get();
+        return ServiceCategoryResource::collection($query);
+    }
+
     public function getAvailableServices(): AnonymousResourceCollection
     {
         $query = ServiceCategory::query()
