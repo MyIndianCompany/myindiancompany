@@ -43,12 +43,12 @@ class ServiceCategoryController extends Controller
         $query = ServiceCategory::select([
             'service_categories.id as id',
             'service_categories.name as name',
-            'files.file as file'
+            'service_category_files.file as file'
         ])
-            ->leftJoin('files', function ($join) {
-                $join->on('service_categories.id', '=', 'files.service_category_id')
-                    ->where('files.type', '=', Constants::THUMBNAIL)
-                    ->where('files.status', '=', Constants::STATUS_ACTIVE);
+            ->leftJoin('service_category_files', function ($join) {
+                $join->on('service_categories.id', '=', 'service_category_files.category_id')
+                    ->where('service_category_files.type', '=', Constants::THUMBNAIL)
+                    ->where('service_category_files.status', '=', Constants::STATUS_ACTIVE);
             })
             ->orderBy('service_categories.name')
             ->get();
