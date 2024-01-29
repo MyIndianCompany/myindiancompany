@@ -8,6 +8,7 @@ use App\Http\Resources\Service\ServiceResource;
 use App\Imports\Service\ServiceImport;
 use App\Models\Service\Service;
 use App\Models\Service\ServiceFile;
+use App\Models\ServiceDetailFile;
 use App\Services\ManageServices\ManageServicesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,7 @@ class ServiceController extends Controller
             $categories = $request->input('category_id');
             $service->categories()->attach($categories);
             $files =  $request->file('files');
+            $serviceDetailFiles = $request->file('detail_files');
             if($files) {
                 foreach ($files as $file) {
                     $originalFileName = $file->getClientOriginalName();
@@ -59,6 +61,20 @@ class ServiceController extends Controller
                         'mime_type'          => $file->getMimeType()
                     ];
                     ServiceFile::create($serviceFile);
+                }
+            }
+            if($serviceDetailFiles) {
+                foreach ($serviceDetailFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_DETAIL_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
+                    $serviceFile = [
+                        'service_id' => $service->id,
+                        'original_file_name' => $originalFileName,
+                        'file' => $fileUrl,
+                        'mime_type' => $file->getMimeType(),
+                    ];
+                    ServiceDetailFile::create($serviceFile);
                 }
             }
 
@@ -99,6 +115,7 @@ class ServiceController extends Controller
     {
         try {
             $uploadedFiles = $request->file('files');
+            $serviceDetailFiles = $request->file('detail_files');
             $filesToDelete = $request->input('files_to_delete');
 
             DB::beginTransaction();
@@ -137,6 +154,21 @@ class ServiceController extends Controller
                         'mime_type' => $file->getMimeType(),
                     ];
                     ServiceFile::create($serviceFile);
+                }
+            }
+
+            if($serviceDetailFiles) {
+                foreach ($serviceDetailFiles as $file) {
+                    $originalFileName = $file->getClientOriginalName();
+                    $fileName = $file->storeAs(Constants::SERVICE_DETAIL_FILE_PATH, $originalFileName, 'public');
+                    $fileUrl = Storage::disk('public')->url($fileName);
+                    $serviceFile = [
+                        'service_id' => $service->id,
+                        'original_file_name' => $originalFileName,
+                        'file' => $fileUrl,
+                        'mime_type' => $file->getMimeType(),
+                    ];
+                    ServiceDetailFile::create($serviceFile);
                 }
             }
 

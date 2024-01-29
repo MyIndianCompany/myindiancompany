@@ -3,6 +3,7 @@
 namespace App\Models\Service;
 
 use App\Models\CustomerEnquiry;
+use App\Models\ServiceDetailFile;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -63,7 +64,8 @@ class Service extends Model
         'updated_by',
         'deleted_at',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'pivot'
     ];
 
     public function categories()
@@ -78,6 +80,11 @@ class Service extends Model
     public function files()
     {
         return $this->hasMany(ServiceFile::class, 'service_id');
+    }
+
+    public function detailFiles()
+    {
+        return $this->hasMany(ServiceDetailFile::class, 'service_id');
     }
 
     public function CustomerEnquiries()
