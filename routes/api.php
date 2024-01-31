@@ -190,8 +190,10 @@ Route::prefix('service')->group(function () {
 
 Route::controller(CustomerEnquiryController::class)->group(function () {
     Route::prefix('customer')->group(function () {
-        Route::get('enquiries', 'index');
-        Route::get('export', 'export');
+        Route::middleware('auth:api')->group(function () {
+            Route::get('enquiries', 'index');
+            Route::get('export', 'export');
+        });
         Route::post('enquiry', 'create');
     });
 });
