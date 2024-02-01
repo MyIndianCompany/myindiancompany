@@ -43,6 +43,8 @@ class ServiceCategoryController extends Controller
         $query = ServiceCategory::select([
             'service_categories.id as id',
             'service_categories.name as name',
+            'service_categories.description as description',
+            'service_categories.type as type',
             'service_category_files.file as file'
         ])
             ->leftJoin('service_category_files', function ($join) {
